@@ -10,7 +10,7 @@ export default async (url: string, src: string, type: 'image' | 'video') => {
         },
         {
             name: 'twitter:card',
-            content: type === 'image' ? 'summary_large_image' : 'player'
+            content: 'summary_large_image'
         },
         {
             name: 'twitter:url',
