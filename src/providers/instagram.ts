@@ -4,7 +4,6 @@ import createEmbed from '../createEmbed';
 export default async (browser: Browser, url: string): Promise<string | null> => {
     const post = url.split('instagram.com/')[1].split('/')[0] === 'p';
     if(!post && url.split('instagram.com/')[1].split('/')[0] !== 'reel') return null;
-    console.log(post)
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1080, height: 1024 });
@@ -17,13 +16,10 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
     } else {
         await page.waitForSelector('html article img')
         const img = await page.$$('html article img');
-        console.log(img)
         if(!img) return null;
         const username = await page.$('title')
-        console.log(username)
         if(!username) return null;
         const user = (await page.evaluate(username => username.textContent, username))?.split(" |")[0];
-        console.log(user)
         img.forEach(async (element) => {
             const alt = (await element.getProperty('alt')).toString();
             if(alt.includes(`Photo by ${user} on`)) 
@@ -31,6 +27,7 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
             console.log(src)
         })
     }
+    console.log(src)
     if(!src) return null;
     await page.close(); 
     return createEmbed(url, src, post ? 'image' : 'video');
