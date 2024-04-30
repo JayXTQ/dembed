@@ -31,5 +31,5 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
     console.log('src 2', src)
     if(!src) return null;
     await page.close(); 
-    return createEmbed(url, src, post ? 'image' : 'video');
+    return createEmbed(url, src, post ? 'image' : 'video', 'Generated using dembed for Instagram');
 };

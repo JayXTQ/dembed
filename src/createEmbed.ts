@@ -1,4 +1,4 @@
-export default async (url: string, src: string, type: 'image' | 'video') => {
+export default async (url: string, src: string, type: 'image' | 'video', description: string) => {
     const metas = [
         {
             name: 'og:title',
@@ -19,6 +19,14 @@ export default async (url: string, src: string, type: 'image' | 'video') => {
         {
             name: 'twitter:title',
             content: 'dembed'
+        },
+        {
+            name: 'og:description',
+            content: description
+        },
+        {
+            name: 'twitter:description',
+            content: description
         },
     ]
     const imageMetas = [
