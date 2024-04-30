@@ -13,6 +13,7 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         const video = await page.$('video');
         if(!video) return null;
         src = await page.evaluate(video => video.src, video);
+        console.log('src 1', src)
     } else {
         await page.waitForSelector('html article img')
         const img = await page.$$('html article img');
@@ -24,10 +25,10 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
             const alt = (await element.getProperty('alt')).toString();
             if(alt.includes(`Photo by ${user} on`)) 
                 src = (await element.getProperty('src')).toString().replace('JSHandle:', '');
-            console.log(src)
+            console.log('src 1', src)
         })
     }
-    console.log(src)
+    console.log('src 2', src)
     if(!src) return null;
     await page.close(); 
     return createEmbed(url, src, post ? 'image' : 'video');
