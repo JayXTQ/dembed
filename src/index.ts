@@ -33,12 +33,12 @@ const browser = puppeteer.launch({
 
 app.get('/:url*', async (req: Request, res: Response) => {
     const url = req.params.url;
-    if(!url) return;
-    console.log(url, req.params)
+    if(!url || !url.startsWith("http")) return;
     if(!/^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i.test(url)){
-        res.status(400).send('Bad Request');
+        return res.status(400).send('Bad Request');
     }
     let provider = url.split('/')[2];
+    if(!provider) return res.status(400).send('Bad Request');
     if(provider.includes('www.')){
         provider = provider.split('www.')[1];
     }
