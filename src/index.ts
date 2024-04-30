@@ -31,8 +31,8 @@ const browser = puppeteer.launch({
 	],
 });
 
-app.get('/:url*', async (req: Request, res: Response) => {
-    const url = req.params.url;
+app.get('/*', async (req: Request, res: Response) => {
+    const url = req.url.slice(1);
     console.log(url)
     if(!url || !url.startsWith("http")) return;
     if(!/^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i.test(url)){
