@@ -21,12 +21,12 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         const username = await page.$('title')
         if(!username) return null;
         const user = (await page.evaluate(username => username.textContent, username))?.split(" |")[0];
-        img.forEach(async (element) => {
+        for (const element of img) {
             const alt = (await element.getProperty('alt')).toString();
             if(alt.includes(`Photo by ${user} on`)) 
                 src = (await element.getProperty('src')).toString().replace('JSHandle:', '');
-            console.log('src 1', src)
-        })
+        }
+        console.log('src 1', src)
     }
     console.log('src 2', src)
     if(!src) return null;
