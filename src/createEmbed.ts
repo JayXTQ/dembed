@@ -1,13 +1,61 @@
 export default async (url: string, src: string, type: 'image' | 'video') => {
+    const metas = [
+        {
+            name: 'og:title',
+            content: 'dembed'
+        },
+        {
+            name: 'og:url',
+            content: url
+        },
+        {
+            name: 'twitter:card',
+            content: type === 'image' ? 'summary_large_image' : 'player'
+        },
+        {
+            name: 'twitter:url',
+            content: url
+        },
+        {
+            name: 'twitter:title',
+            content: 'dembed'
+        },
+    ]
+    const imageMetas = [
+        {
+            name: 'twitter:image',
+            content: src
+        }
+    ]
+    const videoMetas = [
+        {
+            name: 'twitter:player',
+            content: src
+        },
+        {
+            name: 'og:type',
+            content: 'video.other'
+        },
+        {
+            name: 'og:video',
+            content: src
+        },
+        {
+            name: 'og:video:secure_url',
+            content: src
+        },
+        {
+            name: 'og:video:type',
+            content: 'video/mp4'
+        }
+    ]
+
+
     return `<!DOCTYPE html>
 <html>
     <head>
-        <meta content="dembed" property="og:title" />
-        <meta content="${url}" property="og:url" />
-        <meta content="${type === 'image' ? 'summary_large_image' : 'player'}" property="twitter:card" />
-        <meta content="${url}" property="twitter:url" />
-        <meta content="dembed" property="twitter:title" />
-        ${type === 'image' ? `<meta content="${src}" property="twitter:image" />` : `<meta content="${src}" property="og:video" />`}
+        ${metas.map(meta => `<meta name="${meta.name}" content="${meta.content}">`).join('\n')}
+        ${type === 'image' ? imageMetas.map(meta => `<meta name="${meta.name}" content="${meta.content}">`).join('\n') : videoMetas.map(meta => `<meta name="${meta.name}" content="${meta.content}">`).join('\n')}
     </head>
 </html>`
 }
