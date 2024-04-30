@@ -36,25 +36,29 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
         }
     ]
     const videoMetas = [
+        // {
+        //     name: 'twitter:player',
+        //     content: src
+        // },
+        // {
+        //     name: 'og:type',
+        //     content: 'video.other'
+        // },
+        // {
+        //     name: 'og:video',
+        //     content: src
+        // },
+        // {
+        //     name: 'og:video:secure_url',
+        //     content: src
+        // },
+        // {
+        //     name: 'og:video:type',
+        //     content: 'video/mp4'
+        // }
         {
-            name: 'twitter:player',
+            name: 'twitter:image',
             content: src
-        },
-        {
-            name: 'og:type',
-            content: 'video.other'
-        },
-        {
-            name: 'og:video',
-            content: src
-        },
-        {
-            name: 'og:video:secure_url',
-            content: src
-        },
-        {
-            name: 'og:video:type',
-            content: 'video/mp4'
         }
     ]
 
