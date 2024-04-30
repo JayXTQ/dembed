@@ -15,8 +15,8 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         if(!video) return null;
         src = await page.evaluate(video => video.src, video);
     } else {
-        await page.waitForSelector('article > img')
-        const img = await page.$$('article > img');
+        await page.waitForSelector('article >>>>>>> img')
+        const img = await page.$$('article >>>>>>> img');
         if(!img) return null;
         const username = await page.$('title')
         if(!username) return null;
