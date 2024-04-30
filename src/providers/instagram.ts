@@ -17,11 +17,15 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
     } else {
         await page.waitForSelector('article >>>>>>> img')
         const img = await page.$$('article >>>>>>> img');
+        console.log(img)
         if(!img) return null;
         const username = await page.$('title')
+        console.log(username)
         if(!username) return null;
         const user = (await page.evaluate(username => username.textContent, username))?.split(" |")[0];
+        console.log(user)
         img.forEach(async (element) => {
+            console.log(await element.getProperty('alt'))
             src = (await element.getProperty('alt')).toString().includes(`Photo by ${user} on`) ? (await element.getProperty('src')).toString() : '';
         })
     }
