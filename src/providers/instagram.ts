@@ -25,8 +25,9 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         const user = (await page.evaluate(username => username.textContent, username))?.split(" |")[0];
         console.log(user)
         img.forEach(async (element) => {
-            console.log((await element.getProperty('alt')).toString())
-            src = (await element.getProperty('alt')).toString().includes(`Photo by ${user} on`) ? (await element.getProperty('src')).toString() : '';
+            const alt = (await element.getProperty('alt')).toString();
+            console.log(alt, `Photo by ${user} on`, alt.includes(`Photo by ${user} on`))
+            src = alt.includes(`Photo by ${user} on`) ? alt : '';
         })
     }
     if(!src) return null;
