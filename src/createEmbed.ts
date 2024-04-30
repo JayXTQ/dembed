@@ -59,6 +59,10 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
         {
             name: 'twitter:image',
             content: src
+        },
+        {
+            name: 'og:image',
+            content: src
         }
     ]
 
