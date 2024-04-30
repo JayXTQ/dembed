@@ -7,7 +7,7 @@ export default async (url: string, src: string, type: 'image' | 'video') => {
         <meta content="${type === 'image' ? 'summary_large_image' : 'player'}" property="twitter:card" />
         <meta content="${url}" property="twitter:url" />
         <meta content="dembed" property="twitter:title" />
-        ${type === 'image' ? `<meta content="${src}" property="twitter:image" />` : `<meta content="${src}" property="twitter:video" />`}
+        ${type === 'image' ? `<meta content="${src}" property="twitter:image" />` : `<meta content="${src}" property="og:video" />`}
     </head>
 </html>`
 }
