@@ -25,6 +25,6 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         })
     }
     if(!src) return null;
-    await page.close();
+    await page.close(); 
     return createEmbed(url, src, post ? 'image' : 'video');
 };
