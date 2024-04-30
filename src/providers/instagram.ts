@@ -27,7 +27,7 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         img.forEach(async (element) => {
             const alt = (await element.getProperty('alt')).toString();
             if(alt.includes(`Photo by ${user} on`)) 
-                src = (await element.getProperty('src')).toString();
+                src = (await element.getProperty('src')).toString().replace('JSHandle:', '');
             console.log(src)
         })
     }
