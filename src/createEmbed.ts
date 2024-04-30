@@ -54,8 +54,8 @@ export default async (url: string, src: string, type: 'image' | 'video') => {
     return `<!DOCTYPE html>
 <html>
     <head>
-        ${metas.map(meta => `<meta name="${meta.name}" content="${meta.content}">`).join('\n')}
-        ${type === 'image' ? imageMetas.map(meta => `<meta name="${meta.name}" content="${meta.content}">`).join('\n') : videoMetas.map(meta => `<meta name="${meta.name}" content="${meta.content}">`).join('\n')}
+        ${metas.map(meta => `<meta name="${meta.name}" content="${meta.content}" />`).join('\n')}
+        ${type === 'image' ? imageMetas.map(meta => `<meta name="${meta.name}" content="${meta.content}" />`).join('\n') : videoMetas.map(meta => `<meta name="${meta.name}" content="${meta.content}" />`).join('\n')}
     </head>
 </html>`
 }
