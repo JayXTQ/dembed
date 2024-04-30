@@ -4,6 +4,7 @@ import createEmbed from '../createEmbed';
 export default async (browser: Browser, url: string): Promise<string | null> => {
     const post = url.split('instagram.com/')[1].split('/')[0] === 'p';
     if(!post && url.split('instagram.com/')[1].split('/')[0] !== 'reel') return null;
+    console.log(post)
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1080, height: 1024 });
@@ -14,8 +15,8 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         if(!video) return null;
         src = await page.evaluate(video => video.src, video);
     } else {
-        await page.waitForSelector('article img')
-        const img = await page.$$('article img');
+        await page.waitForSelector('article > img')
+        const img = await page.$$('article > img');
         if(!img) return null;
         const username = await page.$('title')
         if(!username) return null;
