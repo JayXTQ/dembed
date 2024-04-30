@@ -49,3 +49,7 @@ app.get('/:url*', async (req: Request, res: Response) => {
     if(!response) return res.status(400).send('Bad Request')
     res.send(response);
 });
+
+app.listen(port, () => {
+  console.log(`Server started`);
+});
