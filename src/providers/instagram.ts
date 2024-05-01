@@ -1,4 +1,4 @@
-import { Browser } from "puppeteer";
+import { Browser, ElementHandle } from "puppeteer";
 import createEmbed from "../createEmbed";
 
 export default async (
@@ -18,10 +18,15 @@ export default async (
     const user = (
         await page.evaluate((username) => username.textContent, username)
     )?.split(" |")[0];
-    const description =
-        (await page.$('html article ul li h1[dir="auto"]'))?.getProperty(
-            "textContent",
-        ) || "No description found";
+    let description: string | ElementHandle | null = await page.$(
+        "html article ul li h1",
+    );
+    if (!description) description = "";
+    if (typeof description !== "string")
+        description = await page.evaluate(
+            (description) => description.textContent,
+            description,
+        );
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
