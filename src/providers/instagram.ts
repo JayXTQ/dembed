@@ -8,11 +8,13 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
     await page.goto(url);
     await page.setViewport({ width: 1080, height: 1024 });
     let src = '';
+    let resolution: { w: number; h: number } | null = null;
     if(!post) {
         await page.waitForSelector('video')
         const video = await page.$('video');
         if(!video) return null;
         src = await page.evaluate(video => video.src, video);
+        resolution = await page.evaluate(video => ({ w: video.videoWidth, h: video.videoHeight }), video);
         console.log('src 1', src)
     } else {
         await page.waitForSelector('html article img')
@@ -31,5 +33,5 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
     console.log('src 2', src)
     if(!src) return null;
     await page.close(); 
-    return createEmbed(url, src, post ? 'image' : 'video', 'Generated using dembed for Instagram');
+    return createEmbed(url, src, post ? 'image' : 'video', 'Generated using dembed for Instagram', !!resolution ? resolution : undefined);
 };

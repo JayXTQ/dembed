@@ -1,4 +1,4 @@
-export default async (url: string, src: string, type: 'image' | 'video', description: string) => {
+export default async (url: string, src: string, type: 'image' | 'video', description: string, resolution?: { w: number; h: number }) => {
     const metas = [
         {
             name: 'og:title',
@@ -36,29 +36,21 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
         }
     ]
     const videoMetas = [
-        // {
-        //     name: 'twitter:player',
-        //     content: src
-        // },
-        // {
-        //     name: 'og:type',
-        //     content: 'video.other'
-        // },
-        // {
-        //     name: 'og:video',
-        //     content: src
-        // },
-        // {
-        //     name: 'og:video:secure_url',
-        //     content: src
-        // },
-        // {
-        //     name: 'og:video:type',
-        //     content: 'video/mp4'
-        // }
+        {
+            name: 'og:type',
+            content: 'video.other'
+        },
         {
             name: 'og:video:url',
             content: src
+        },
+        {
+            name: 'og:video:width',
+            content: resolution?.w.toString()
+        },
+        {
+            name: 'og:video:height',
+            content: resolution?.h.toString()
         }
     ]
 
