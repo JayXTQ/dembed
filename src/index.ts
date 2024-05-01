@@ -34,7 +34,7 @@ const browser = puppeteer.launch({
 app.get("/http*", async (req: Request, res: Response) => {
     const url = req.url.slice(1);
     if (
-        !req.header["user-agent"]?.includes("Discordbot")
+        !req.headers["user-agent"]?.includes("Discordbot")
         // "Mozilla/5.0 (compatible; Discordbot/2.0; +discordapp.com)"
     )
         return res.redirect(url);
