@@ -46,46 +46,46 @@ export default (
         },
     ];
     const videoMetas: Metas = [
-        // {
-        //     name: "twitter:card",
-        //     content: "player",
-        // },
-        // {
-        //     name: "twitter:player:width",
-        //     content: resolution?.w.toString() || "0",
-        // },
-        // {
-        //     name: "twitter:player:height",
-        //     content: resolution?.h.toString() || "0",
-        // },
-        // {
-        //     name: "twitter:player:stream",
-        //     content: src,
-        // },
-        // {
-        //     name: "twitter:player:stream:content_type",
-        //     content: "video/mp4",
-        // },
         {
-            property: "og:video",
-            content: src,
+            name: "twitter:card",
+            content: "player",
         },
         {
-            property: "og:video:secure_url",
-            content: src,
-        },
-        {
-            property: "og:video:type",
-            content: "video/mp4",
-        },
-        {
-            property: "og:video:width",
+            name: "twitter:player:width",
             content: resolution?.w.toString() || "0",
         },
         {
-            property: "og:video:height",
+            name: "twitter:player:height",
             content: resolution?.h.toString() || "0",
         },
+        {
+            name: "twitter:player:stream",
+            content: src,
+        },
+        {
+            name: "twitter:player:stream:content_type",
+            content: "video/mp4",
+        },
+        // {
+        //     property: "og:video",
+        //     content: src,
+        // },
+        // {
+        //     property: "og:video:secure_url",
+        //     content: src,
+        // },
+        // {
+        //     property: "og:video:type",
+        //     content: "video/mp4",
+        // },
+        // {
+        //     property: "og:video:width",
+        //     content: resolution?.w.toString() || "0",
+        // },
+        // {
+        //     property: "og:video:height",
+        //     content: resolution?.h.toString() || "0",
+        // },
     ];
 
     return `<!DOCTYPE html>
