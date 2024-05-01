@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get("/", (_: Request, res: Response) => {
-    res.send("Hello World!");
+    res.redirect("https://github.com/JayXTQ/dembed");
 });
 
 async function getProvider(provider: string) {
