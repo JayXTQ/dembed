@@ -75,6 +75,7 @@ export const video = async (
     const video = await page.$("video");
     if (!video) return null;
     let src = await page.evaluate((video) => video.src, video);
+    await page.close();
     src = `https://envoy.lol/${src}`;
     return src;
 };
