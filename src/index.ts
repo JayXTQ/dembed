@@ -32,7 +32,6 @@ const browser = puppeteer.launch({
 });
 
 app.get("/http*", async (req: Request, res: Response) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
     const url = req.url.slice(1);
     if (
         !req.header["user-agent"]?.includes("Discordbot")
