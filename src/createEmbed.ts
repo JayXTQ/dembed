@@ -119,9 +119,9 @@ export default (
                       )
                       .join("\n     ")
         }
-        <link rel="alternate"
+        ${type === "video" ? `<link rel="alternate"
 		href="https://dembed.page/oembed?author_name=${encodeURIComponent(description)}&author_url=${encodeURIComponent(url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
-		type="application/json+oembed" title="${description}" />
+		type="application/json+oembed" title="${description}" />` : ""}
     </head>
     <body>
         why u peekin?
