@@ -56,6 +56,10 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
         //     name: 'og:video:type',
         //     content: 'video/mp4'
         // }
+        {
+            name: 'og:video:url',
+            content: src
+        }
     ]
 
 
