@@ -35,6 +35,7 @@ export default async (
                     splitLines[splitLines.indexOf(line)].slice(0, -1);
             }
             html = splitLines.join(" ");
+            html = html.replace(/\n/g, " ");
             if (html.length >= 200) html = html.slice(0, 200) + "...";
             return html;
         }, description);
