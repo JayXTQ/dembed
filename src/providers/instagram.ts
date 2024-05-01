@@ -55,6 +55,7 @@ export default async (
     console.log("src", src);
     if (!src) return null;
     await page.close();
+    console.log(`Post by ${user}: ${description}`);
     return createEmbed(
         url,
         src,
