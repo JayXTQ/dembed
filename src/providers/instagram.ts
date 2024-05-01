@@ -18,6 +18,7 @@ export default async (
     const user = (
         await page.evaluate((username) => username.textContent, username)
     )?.split(" |")[0];
+    await page.waitForSelector("html article h1");
     let description: string | ElementHandle | null =
         await page.$("html article h1");
     if (!description) description = "No description found.";
