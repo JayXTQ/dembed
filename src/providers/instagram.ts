@@ -10,7 +10,7 @@ export default async (
         return null;
     const page = await browser.newPage();
     await page.goto(url);
-    await page.setViewport({ width: 1080, height: 1024 });
+    await page.setViewport({ width: 1920, height: 1080 });
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
     const username = await page.$("title");
@@ -18,15 +18,25 @@ export default async (
     const user = (
         await page.evaluate((username) => username.textContent, username)
     )?.split(" |")[0];
-    let description: string | ElementHandle | null = await page.$(
-        "html article ul li h1",
-    );
-    if (!description) description = "";
+    let description: string | ElementHandle | null =
+        await page.$("html article h1");
+    if (!description) description = "No description found.";
     if (typeof description !== "string")
-        description = await page.evaluate(
-            (description) => description.textContent,
-            description,
-        );
+        description = await page.evaluate((description) => {
+            let html = description.innerHTML;
+            html = html.replace(/<br>/g, "\n");
+            html = html.replace(/<a [^>]*>(.*?)<\/a>/g, "$1");
+            const splitLines = html.split("\n");
+            for (const line of splitLines) {
+                if (line.startsWith('"'))
+                    splitLines[splitLines.indexOf(line)].slice(1);
+                if (line.endsWith('"'))
+                    splitLines[splitLines.indexOf(line)].slice(0, -1);
+            }
+            html = splitLines.join(" ");
+            if (html.length >= 200) html = html.slice(0, 200) + "...";
+            return html;
+        }, description);
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
