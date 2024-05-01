@@ -46,10 +46,10 @@ export default (
         },
     ];
     const videoMetas: Metas = [
-        {
-            name: "twitter:card",
-            content: "player",
-        },
+        // {
+        //     name: "twitter:card",
+        //     content: "player",
+        // },
         {
             name: "twitter:player:width",
             content: resolution?.w.toString() || "0",
