@@ -26,8 +26,7 @@ export default async (
     let description: ElementHandle | string | null = await page.$('h1[data-e2e="browse-video-desc"]')
     if (!description) description = 'No description';
     if(typeof description !== 'string' ) description = await page.evaluate((description) => {
-        const html = extractText(description.innerHTML);
-        return html.replace(/\n/g, " ");
+        return extractText(description.innerHTML);
     }, description, extractText.toString());
     const embed = createEmbed(
         url,

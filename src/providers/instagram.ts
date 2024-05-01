@@ -23,18 +23,7 @@ export default async (
     if (!description) description = "No description found.";
     if (typeof description !== "string")
         description = await page.evaluate((description) => {
-            let html = extractText(description.innerHTML);
-            const splitLines = html.split("\n");
-            for (const line of splitLines) {
-                if (line.startsWith('"'))
-                    splitLines[splitLines.indexOf(line)].slice(1);
-                if (line.endsWith('"'))
-                    splitLines[splitLines.indexOf(line)].slice(0, -1);
-            }
-            html = splitLines.join(" ");
-            html = html.replace(/\n/g, " ");
-            if (html.length >= 200) html = html.slice(0, 200) + "...";
-            return html;
+            return extractText(description.innerHTML);
         }, description, extractText.toString());
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
