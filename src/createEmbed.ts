@@ -1,4 +1,4 @@
-export default async (url: string, src: string, type: 'image' | 'video', description: string, resolution?: { w: number; h: number }) => {
+export default (url: string, src: string, type: 'image' | 'video', description: string, resolution?: { w: number; h: number }) => {
     const metas = [
         {
             name: 'og:title',
@@ -48,14 +48,14 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
             name: 'og:video:type',
             content: 'video/mp4'
         },
-        {
-            name: 'og:video:width',
-            content: resolution?.w.toString()
-        },
-        {
-            name: 'og:video:height',
-            content: resolution?.h.toString()
-        },
+        // {
+        //     name: 'og:video:width',
+        //     content: resolution?.w.toString()
+        // },
+        // {
+        //     name: 'og:video:height',
+        //     content: resolution?.h.toString()
+        // },
         {
             name: 'twitter:player:stream',
             content: src
@@ -64,14 +64,14 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
             name: 'twitter:player:stream:content_type',
             content: 'video/mp4'
         },
-        {
-            name: 'twitter:player:width',
-            content: resolution?.w.toString()
-        },
-        {
-            name: 'twitter:player:height',
-            content: resolution?.h.toString()
-        },
+        // {
+        //     name: 'twitter:player:width',
+        //     content: resolution?.w.toString()
+        // },
+        // {
+        //     name: 'twitter:player:height',
+        //     content: resolution?.h.toString()
+        // },
         {
             name: 'twitter:card',
             content: 'player'
