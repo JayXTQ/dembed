@@ -31,10 +31,6 @@ export default (
             content: description,
         },
         {
-            name: "twitter:description",
-            content: description,
-        },
-        {
             property: "og:site_name",
             content: "dembed",
         },
