@@ -1,6 +1,6 @@
 import { Browser, ElementHandle } from "puppeteer";
-import createEmbed from "../createEmbed";
-import { extractText } from "../utils";
+import createEmbed from "../createEmbed.ts";
+import { extractText } from "../utils.ts";
 
 export default async (
     browser: Browser,

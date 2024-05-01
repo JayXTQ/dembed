@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import "dotenv/config";
 import puppeteer from "puppeteer";
-import type { IndexProvider as Provider } from "./types";
+import type { IndexProvider as Provider } from "./types.ts";
 
 const app = express();
 const port = process.env.PORT || 3000;
