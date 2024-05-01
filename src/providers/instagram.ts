@@ -22,9 +22,7 @@ export default async (
     let description: string | ElementHandle | null = await page.waitForSelector("html article h1").catch(() => null);
     if (!description) description = "No description found.";
     if (typeof description !== "string")
-        description = await page.evaluate((description) => {
-            return extractText(description.innerHTML);
-        }, description, extractText.toString());
+        description = extractText((await description.getProperty('innerHTML')).toString().replace('JSHandle:', ''));
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
