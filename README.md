@@ -6,7 +6,8 @@ This is done by adding a simple prefix to the URL. For instance, rather than usi
 
 ## Supported Sites
 
--   Instagram
+- Instagram (Reels and Single Image Posts)
+- TikTok (Videos)
 
 ## Contributing
 
