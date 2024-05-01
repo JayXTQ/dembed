@@ -14,15 +14,16 @@ export default async (
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
     if (!post) {
-        await page.waitForSelector("video");
-        const video = await page.$("video");
-        if (!video) return null;
-        src = await page.evaluate((video) => video.src, video);
-        resolution = await page.evaluate(
-            (video) => ({ w: video.videoWidth, h: video.videoHeight }),
-            video,
-        );
-        src = `https://envoy.lol/${src}`;
+        // await page.waitForSelector("video");
+        // const video = await page.$("video");
+        // if (!video) return null;
+        // src = await page.evaluate((video) => video.src, video);
+        // resolution = await page.evaluate(
+        //     (video) => ({ w: video.videoWidth, h: video.videoHeight }),
+        //     video,
+        // );
+        // src = `https://envoy.lol/${src}`;
+        src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
         await page.waitForSelector("html article img");
         const img = await page.$$("html article img");
@@ -50,4 +51,19 @@ export default async (
         "Generated using dembed for Instagram",
         resolution,
     );
+};
+
+export const video = async (
+    browser: Browser,
+    data: string,
+): Promise<string | null> => {
+    const page = await browser.newPage();
+    await page.goto(`https://www.instagram.com/${data}`);
+    await page.setViewport({ width: 1080, height: 1024 });
+    await page.waitForSelector("video");
+    const video = await page.$("video");
+    if (!video) return null;
+    let src = await page.evaluate((video) => video.src, video);
+    src = `https://envoy.lol/${src}`;
+    return src;
 };
