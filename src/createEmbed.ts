@@ -56,14 +56,6 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
         //     name: 'og:video:type',
         //     content: 'video/mp4'
         // }
-        {
-            name: 'twitter:image',
-            content: src
-        },
-        {
-            name: 'og:image',
-            content: src
-        }
     ]
 
 
