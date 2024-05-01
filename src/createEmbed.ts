@@ -9,10 +9,6 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
             content: url
         },
         {
-            name: 'twitter:card',
-            content: 'summary_large_image'
-        },
-        {
             name: 'twitter:url',
             content: url
         },
@@ -31,18 +27,26 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
     ]
     const imageMetas = [
         {
+            name: 'twitter:card',
+            content: 'summary_large_image'
+        },
+        {
             name: 'twitter:image',
             content: src
         }
     ]
     const videoMetas = [
         {
-            name: 'og:type',
-            content: 'video.other'
+            name: 'og:video',
+            content: src
         },
         {
-            name: 'og:video:url',
+            name: 'og:video:secure_url',
             content: src
+        },
+        {
+            name: 'og:video:type',
+            content: 'video/mp4'
         },
         {
             name: 'og:video:width',
@@ -51,6 +55,26 @@ export default async (url: string, src: string, type: 'image' | 'video', descrip
         {
             name: 'og:video:height',
             content: resolution?.h.toString()
+        },
+        {
+            name: 'twitter:player:stream',
+            content: src
+        },
+        {
+            name: 'twitter:player:stream:content_type',
+            content: 'video/mp4'
+        },
+        {
+            name: 'twitter:player:width',
+            content: resolution?.w.toString()
+        },
+        {
+            name: 'twitter:player:height',
+            content: resolution?.h.toString()
+        },
+        {
+            name: 'twitter:card',
+            content: 'player'
         }
     ]
 
