@@ -28,7 +28,7 @@ export default async (
     if(typeof description !== 'string' ) description = await page.evaluate((description) => {
         const html = extractText(description.innerHTML);
         return html.replace(/\n/g, " ");
-    }, description);
+    }, description, extractText.toString());
     const embed = createEmbed(
         url,
         src,

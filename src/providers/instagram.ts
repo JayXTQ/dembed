@@ -35,7 +35,7 @@ export default async (
             html = html.replace(/\n/g, " ");
             if (html.length >= 200) html = html.slice(0, 200) + "...";
             return html;
-        }, description);
+        }, description, extractText.toString());
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
