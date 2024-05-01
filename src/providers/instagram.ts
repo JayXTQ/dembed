@@ -13,17 +13,21 @@ export default async (
     await page.setViewport({ width: 1080, height: 1024 });
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
+    const username = await page.$("title");
+    if (!username) return null;
+    const user = (
+        await page.evaluate((username) => username.textContent, username)
+    )?.split(" |")[0];
+    const description =
+        (await page.$('html article ul li h1[dir="auto"]'))?.getProperty(
+            "textContent",
+        ) || "No description found";
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
         await page.waitForSelector("html article img");
         const img = await page.$$("html article img");
         if (!img) return null;
-        const username = await page.$("title");
-        if (!username) return null;
-        const user = (
-            await page.evaluate((username) => username.textContent, username)
-        )?.split(" |")[0];
         for (const element of img) {
             const alt = (await element.getProperty("alt")).toString();
             if (alt.includes(`Photo by ${user} on`))
@@ -39,7 +43,7 @@ export default async (
         url,
         src,
         post ? "image" : "video",
-        "Generated using dembed for Instagram",
+        `Generated using dembed for Instagram - Post by ${user}: ${description}`,
         resolution,
     );
 };
