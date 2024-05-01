@@ -43,6 +43,7 @@ export const video = async (
     const video = await page.waitForSelector("video").catch(() => null);
     if (!video) return null;
     const src = await page.evaluate((video) => video.src, video);
+    console.log(src);
     await page.close();
     return src;
 };
