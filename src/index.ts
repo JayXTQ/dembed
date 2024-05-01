@@ -74,6 +74,15 @@ app.get("/video/:provider/*", async (req: Request, res: Response) => {
     return res.redirect(src);
 });
 
+app.get("/oembed", async (req: Request, res: Response) => {
+    const url = new URL(req.url, `${req.protocol}://${req.headers.host}`);
+    const searchParams = Object.fromEntries(url.searchParams.entries());
+    for(const key in searchParams) {
+        searchParams[key] = decodeURIComponent(searchParams[key]);
+    }
+    return res.json(searchParams);
+});
+
 app.listen(port, () => {
     console.log(`Server started`);
 });

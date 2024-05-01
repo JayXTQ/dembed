@@ -46,10 +46,10 @@ export default (
         },
     ];
     const videoMetas: Metas = [
-        // {
-        //     name: "twitter:card",
-        //     content: "player",
-        // },
+        {
+            name: "twitter:card",
+            content: "player",
+        },
         {
             name: "twitter:player:width",
             content: resolution?.w.toString() || "0",
@@ -66,26 +66,26 @@ export default (
             name: "twitter:player:stream:content_type",
             content: "video/mp4",
         },
-        // {
-        //     property: "og:video",
-        //     content: src,
-        // },
-        // {
-        //     property: "og:video:secure_url",
-        //     content: src,
-        // },
-        // {
-        //     property: "og:video:type",
-        //     content: "video/mp4",
-        // },
-        // {
-        //     property: "og:video:width",
-        //     content: resolution?.w.toString() || "0",
-        // },
-        // {
-        //     property: "og:video:height",
-        //     content: resolution?.h.toString() || "0",
-        // },
+        {
+            property: "og:video",
+            content: src,
+        },
+        {
+            property: "og:video:secure_url",
+            content: src,
+        },
+        {
+            property: "og:video:type",
+            content: "video/mp4",
+        },
+        {
+            property: "og:video:width",
+            content: resolution?.w.toString() || "0",
+        },
+        {
+            property: "og:video:height",
+            content: resolution?.h.toString() || "0",
+        },
     ];
 
     return `<!DOCTYPE html>
@@ -119,6 +119,9 @@ export default (
                       )
                       .join("\n     ")
         }
+        <link rel="alternate"
+		href="https://dembed.page/oembed?author_name=${encodeURIComponent(description)}&author_url=${encodeURIComponent(url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
+		type="application/json+oembed" title="${description}" />
     </head>
     <body>
         why u peekin?
