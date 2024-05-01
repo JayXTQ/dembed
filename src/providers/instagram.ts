@@ -18,9 +18,7 @@ export default async (
     const user = (
         await page.evaluate((username) => username.textContent, username)
     )?.split(" |")[0];
-    await page.waitForSelector("html article h1");
-    let description: string | ElementHandle | null =
-        await page.$("html article h1");
+    let description: string | ElementHandle | null = await page.waitForSelector("html article h1").catch(() => null);
     if (!description) description = "No description found.";
     if (typeof description !== "string")
         description = await page.evaluate((description) => {
@@ -42,7 +40,8 @@ export default async (
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
-        await page.waitForSelector("html article img");
+        const img_ = await page.waitForSelector("html article img").catch(() => null);
+        if (!img_) return null;
         const img = await page.$$("html article img");
         if (!img) return null;
         for (const element of img) {
@@ -73,8 +72,7 @@ export const video = async (
     const page = await browser.newPage();
     await page.goto(`https://www.instagram.com/${data}`);
     await page.setViewport({ width: 1080, height: 1024 });
-    await page.waitForSelector("video");
-    const video = await page.$("video");
+    const video = await page.waitForSelector("video").catch(() => null);
     if (!video) return null;
     let src = await page.evaluate((video) => video.src, video);
     await page.close();
