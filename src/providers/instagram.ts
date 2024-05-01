@@ -59,7 +59,7 @@ export default async (
         url,
         src,
         post ? "image" : "video",
-        `Generated using dembed for Instagram - Post by ${user}: ${description}`,
+        `Post by ${user}: ${description}`,
         resolution,
     );
 };
