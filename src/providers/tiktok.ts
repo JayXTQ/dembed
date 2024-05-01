@@ -26,7 +26,7 @@ export default async (
     await page.close();
     const embed = createEmbed(
         url,
-        '/video/tiktok/' + url.split('https://www.tiktok.com/')[1],
+        '/video/tiktok/' + url.split('https://www.tiktok.com/')[1].split('?')[0].split('/').at(-1),
         "video",
         `Post by ${user}: ${description}`
     );
@@ -34,16 +34,8 @@ export default async (
 };
 
 export const video = async (
-    browser: Browser,
+    _: Browser,
     data: string,
 ): Promise<string | null> => {
-    const page = await browser.newPage();
-    await page.goto(`https://www.tiktok.com/${data}`);
-    await page.setViewport({ width: 1920, height: 1080 });
-    const video = await page.waitForSelector("video").catch(() => null);
-    if (!video) return null;
-    const src = await page.evaluate((video) => video.src, video);
-    console.log(src);
-    await page.close();
-    return src;
+    return `https://tiktxk.com/meta/${data}/video`;
 };
