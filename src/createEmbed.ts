@@ -1,5 +1,6 @@
 export default (url: string, src: string, type: 'image' | 'video', description: string, resolution?: { w: number; h: number }) => {
-    const metas = [
+    type Metas = Array<{name: string; content: string} | { property: string; content: string }>
+    const metas: Metas = [
         {
             name: 'og:title',
             content: 'dembed'
@@ -25,7 +26,7 @@ export default (url: string, src: string, type: 'image' | 'video', description: 
             content: description
         },
     ]
-    const imageMetas = [
+    const imageMetas: Metas = [
         {
             name: 'twitter:card',
             content: 'summary_large_image'
@@ -35,7 +36,27 @@ export default (url: string, src: string, type: 'image' | 'video', description: 
             content: src
         }
     ]
-    const videoMetas = [
+    const videoMetas: Metas = [
+        {
+            name: 'twitter:card',
+            content: 'player'
+        },
+        {
+            name: 'twitter:player:width',
+            content: resolution?.w.toString() as string
+        },
+        {
+            name: 'twitter:player:height',
+            content: resolution?.h.toString() as string
+        },
+        {
+            name: 'twitter:player:stream',
+            content: src
+        },
+        {
+            name: 'twitter:player:stream:content_type',
+            content: 'video/mp4'
+        },
         {
             name: 'og:video',
             content: src
@@ -48,42 +69,22 @@ export default (url: string, src: string, type: 'image' | 'video', description: 
             name: 'og:video:type',
             content: 'video/mp4'
         },
-        // {
-        //     name: 'og:video:width',
-        //     content: resolution?.w.toString()
-        // },
-        // {
-        //     name: 'og:video:height',
-        //     content: resolution?.h.toString()
-        // },
         {
-            name: 'twitter:player:stream',
-            content: src
+            name: 'og:video:width',
+            content: resolution?.w.toString() as string
         },
         {
-            name: 'twitter:player:stream:content_type',
-            content: 'video/mp4'
+            name: 'og:video:height',
+            content: resolution?.h.toString() as string
         },
-        // {
-        //     name: 'twitter:player:width',
-        //     content: resolution?.w.toString()
-        // },
-        // {
-        //     name: 'twitter:player:height',
-        //     content: resolution?.h.toString()
-        // },
-        {
-            name: 'twitter:card',
-            content: 'player'
-        }
     ]
 
 
     return `<!DOCTYPE html>
 <html>
     <head>
-        ${metas.map(meta => !meta.name.startsWith('og:') ? `<meta name="${meta.name}" content="${meta.content}" />` : `<meta property="${meta.name}" content="${meta.content}" />`).join('\n')}
-        ${type === 'image' ? imageMetas.map(meta => !meta.name.startsWith('og:') ? `<meta name="${meta.name}" content="${meta.content}" />` : `<meta property="${meta.name}" content="${meta.content}" />`).join('\n') : videoMetas.map(meta => !meta.name.startsWith('og:') ? `<meta name="${meta.name}" content="${meta.content}" />`: `<meta property="${meta.name}" content="${meta.content}" />`).join('\n')}
+        ${metas.map(meta => `<meta ${Object.keys(meta).map(key => `${key}="${meta[key]}"`).join(' ')} />`).join('\n')}
+        ${type === 'image' ? imageMetas.map(meta => `<meta ${Object.keys(meta).map(key => `${key}="${meta[key]}"`).join(' ')} />`).join('\n') : videoMetas.map(meta => `<meta ${Object.keys(meta).map(key => `${key}="${meta[key]}"`).join(' ')} />`).join('\n')}
     </head>
 </html>`
 }
