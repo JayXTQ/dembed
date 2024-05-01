@@ -31,7 +31,7 @@ export default (
             content: description,
         },
         {
-            property: "twitter:description",
+            name: "twitter:description",
             content: description,
         },
         {

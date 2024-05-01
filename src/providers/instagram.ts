@@ -55,14 +55,15 @@ export default async (
     console.log("src", src);
     if (!src) return null;
     await page.close();
-    console.log(`Post by ${user}: ${description}`);
-    return createEmbed(
+    const embed = createEmbed(
         url,
         src,
         post ? "image" : "video",
         `Post by ${user}: ${description}`,
         resolution,
     );
+    console.log(embed)
+    return embed;
 };
 
 export const video = async (
