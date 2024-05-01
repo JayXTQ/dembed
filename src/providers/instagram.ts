@@ -15,7 +15,7 @@ export default async (browser: Browser, url: string): Promise<string | null> => 
         if(!video) return null;
         src = await page.evaluate(video => video.src, video);
         resolution = await page.evaluate(video => ({ w: video.videoWidth, h: video.videoHeight }), video);
-        if(resolution.w === 0 || resolution.h === 0) resolution = undefined;
+        src = `https://envoy.lol/${src}`
         console.log('src 1', src)
     } else {
         await page.waitForSelector('html article img')
