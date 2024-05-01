@@ -37,7 +37,7 @@ app.get("/http*", async (req: Request, res: Response) => {
         !req.header["user-agent"]?.includes("Discordbot")
         // "Mozilla/5.0 (compatible; Discordbot/2.0; +discordapp.com)"
     )
-        res.redirect(url);
+        return res.redirect(url);
     if (url.length <= 4) return;
     if (
         !/^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i.test(
@@ -58,7 +58,7 @@ app.get("/http*", async (req: Request, res: Response) => {
     }
     const response = await providerFile.default(await browser, url);
     if (!response) return res.status(400).send("Bad Request");
-    res.send(response);
+    return res.send(response);
 });
 
 app.get("/video/:provider/*", async (req: Request, res: Response) => {
@@ -71,7 +71,7 @@ app.get("/video/:provider/*", async (req: Request, res: Response) => {
     }
     const src = await providerFile.video(await browser, data);
     if (!src) return res.status(400).send("Bad Request");
-    res.redirect(src);
+    return res.redirect(src);
 });
 
 app.listen(port, () => {
