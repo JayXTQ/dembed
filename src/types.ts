@@ -11,6 +11,6 @@ export type Providers = (
 ) => Promise<string | null>;
 
 export type VideoProviders = (
-    browser: Browser;
-    data: string;
+    browser: Browser,
+    data: string,
 ) => Promise<string | null>;

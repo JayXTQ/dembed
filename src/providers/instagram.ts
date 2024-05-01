@@ -14,15 +14,6 @@ export default async (
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
     if (!post) {
-        // await page.waitForSelector("video");
-        // const video = await page.$("video");
-        // if (!video) return null;
-        // src = await page.evaluate((video) => video.src, video);
-        // resolution = await page.evaluate(
-        //     (video) => ({ w: video.videoWidth, h: video.videoHeight }),
-        //     video,
-        // );
-        // src = `https://envoy.lol/${src}`;
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
         await page.waitForSelector("html article img");
