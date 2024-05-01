@@ -1,5 +1,6 @@
 import { Browser, ElementHandle } from "puppeteer";
 import createEmbed from "../createEmbed";
+import { extractText } from "../utils";
 
 export default async (
     browser: Browser,
@@ -22,9 +23,7 @@ export default async (
     if (!description) description = "No description found.";
     if (typeof description !== "string")
         description = await page.evaluate((description) => {
-            let html = description.innerHTML;
-            html = html.replace(/<br>/g, "\n");
-            html = html.replace(/<a [^>]*>(.*?)<\/a>/g, "$1");
+            let html = extractText(description.innerHTML);
             const splitLines = html.split("\n");
             for (const line of splitLines) {
                 if (line.startsWith('"'))
@@ -52,7 +51,6 @@ export default async (
                     .replace("JSHandle:", "");
         }
     }
-    console.log("src", src);
     if (!src) return null;
     await page.close();
     const embed = createEmbed(
@@ -62,7 +60,6 @@ export default async (
         `Post by ${user}: ${description}`,
         resolution,
     );
-    console.log(embed)
     return embed;
 };
 

@@ -48,10 +48,7 @@ app.get("/http*", async (req: Request, res: Response) => {
     }
     let provider = url.split("/")[2];
     if (!provider) return res.status(400).send("Bad Request");
-    if (provider.includes("www.")) {
-        provider = provider.split("www.")[1];
-    }
-    provider = provider.split(".")[0];
+    if(provider.split(".").length > 2) provider = provider.split(".")[1];
     const providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile) {
         return res.status(404).send("Provider not found");
