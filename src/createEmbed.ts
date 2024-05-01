@@ -56,11 +56,11 @@ export default (
         },
         {
             name: "twitter:player:width",
-            content: resolution?.w.toString() as string,
+            content: resolution?.w.toString() || "0",
         },
         {
             name: "twitter:player:height",
-            content: resolution?.h.toString() as string,
+            content: resolution?.h.toString() || "0",
         },
         {
             name: "twitter:player:stream",
@@ -84,11 +84,11 @@ export default (
         },
         {
             property: "og:video:width",
-            content: resolution?.w.toString() as string,
+            content: resolution?.w.toString() || "0",
         },
         {
             property: "og:video:height",
-            content: resolution?.h.toString() as string,
+            content: resolution?.h.toString() || "0",
         },
     ];
 
@@ -103,7 +103,7 @@ export default (
                         .map((key) => `${key}="${meta[key]}"`)
                         .join(" ")} />`,
             )
-            .join("\n")}
+            .join("\n       ")}
         ${
             type === "image"
                 ? imageMetas
@@ -113,7 +113,7 @@ export default (
                                   .map((key) => `${key}="${meta[key]}"`)
                                   .join(" ")} />`,
                       )
-                      .join("\n")
+                      .join("\n     ")
                 : videoMetas
                       .map(
                           (meta) =>
@@ -121,7 +121,7 @@ export default (
                                   .map((key) => `${key}="${meta[key]}"`)
                                   .join(" ")} />`,
                       )
-                      .join("\n")
+                      .join("\n     ")
         }
     </head>
     <body>
