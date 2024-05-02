@@ -6,6 +6,7 @@ export default async (
     browser: Browser,
     url: string,
 ): Promise<string | null> => {
+    url = url.split("?")[0];
     const post = url.split("instagram.com/")[1].split("/")[0] === "p";
     if (!post && url.split("instagram.com/")[1].split("/")[0] !== "reel")
         return null;
@@ -19,14 +20,22 @@ export default async (
     const user = (
         await page.evaluate((username) => username.textContent, username)
     )?.split(" |")[0];
-    let description: string | ElementHandle | null = await page.waitForSelector("html article h1").catch(() => null);
+    let description: string | ElementHandle | null = await page
+        .waitForSelector("html article h1")
+        .catch(() => null);
     if (!description) description = "No description found.";
     if (typeof description !== "string")
-        description = extractText((await description.getProperty('innerHTML')).toString().replace('JSHandle:', ''));
+        description = extractText(
+            (await description.getProperty("innerHTML"))
+                .toString()
+                .replace("JSHandle:", ""),
+        );
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
-        const img_ = await page.waitForSelector("html article img").catch(() => null);
+        const img_ = await page
+            .waitForSelector("html article img")
+            .catch(() => null);
         if (!img_) return null;
         const img = await page.$$("html article img");
         if (!img) return null;
