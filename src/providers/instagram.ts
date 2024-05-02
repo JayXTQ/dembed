@@ -18,7 +18,10 @@ export default async (
     if (!username) return null;
     const user = (
         await page.evaluate((username) => username.textContent, username)
-    )?.split(" |")[0];
+    )
+        ?.split(" |")[0]
+        .replace("Instagram video by ", "")
+        .split(" •")[0];
     let description: string | ElementHandle | null = await page
         .waitForSelector("html article h1", { timeout: 5000 })
         .catch(() => {
@@ -48,7 +51,6 @@ export default async (
                     .replace("JSHandle:", "");
         }
     }
-    console.log(src);
     if (!src) return null;
     await page.close();
     const embed = createEmbed(
