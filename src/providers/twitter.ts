@@ -16,10 +16,16 @@ export default async (
     const username = (
         await page.evaluate((user) => user.textContent, user)
     )?.split(" on X")[0];
-    const tweettext =
+    let tweettext =
         (await page
             .waitForSelector(`${loc} div[data-testid="tweetText"]`)
             .catch(() => "")) ?? "";
+    if (typeof tweettext !== "string")
+        tweettext =
+            (await page.evaluate(
+                (tweettext) => tweettext.textContent,
+                tweettext,
+            )) ?? "";
     const tweetimage = await page.$(
         `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
     );
