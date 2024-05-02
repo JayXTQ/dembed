@@ -3,6 +3,7 @@ import "dotenv/config";
 import puppeteer from "puppeteer";
 import type { IndexProvider as Provider } from "./types.ts";
 import { setSecurityHeaders } from "./utils.ts";
+import alternatives from "./providers";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,7 +53,9 @@ app.get("/http*", async (req: Request, res: Response) => {
     let provider = url.split("/")[2];
     if (!provider) return res.status(400).send("Bad Request");
     if (provider.split(".").length > 2) provider = provider.split(".")[1];
-    const providerFile = await getProvider(provider);
+    let providerFile = await getProvider(provider);
+    if (providerFile == null || !providerFile)
+        providerFile = await getProvider(alternatives[provider]);
     if (providerFile == null || !providerFile) {
         return res.status(404).send("Provider not found");
     }
