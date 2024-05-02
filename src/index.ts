@@ -53,6 +53,7 @@ app.get("/http*", async (req: Request, res: Response) => {
     let provider = url.split("/")[2];
     if (!provider) return res.status(400).send("Bad Request");
     if (provider.split(".").length > 2) provider = provider.split(".")[1];
+    console.log(provider);
     let providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile)
         providerFile = await getProvider(alternatives[provider]);
