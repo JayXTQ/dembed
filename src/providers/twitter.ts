@@ -50,9 +50,9 @@ export default async (
         const url_ = new URL(page.url())
         let pathname = url_.pathname
         if(pathname.endsWith("/")){
-            pathname = `https://d.fxtwitter.com${pathname.slice(0, -1)}`
+            pathname = pathname.slice(0, -1)
         }
-        src = `https://d.fxtwitter.com/${pathname}.mp4`
+        src = `/video/twitter/${pathname}`
     }
 
     const user = await page.$("title");
@@ -67,4 +67,14 @@ export default async (
         !!src ? src : undefined,
     );
     return embed;
+};
+
+export const video = async (
+    _: Browser,
+    data: string,
+): Promise<string | null> => {
+    if(data.endsWith("/")){
+        data = data.slice(0, -1)
+    }
+    return `https://d.fxtwitter.com/${data}.mp4`;
 };
