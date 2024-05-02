@@ -12,6 +12,7 @@ export default async (
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1920, height: 1080 });
+    console.log(await page.content());
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
     const username = await page.$("title");
