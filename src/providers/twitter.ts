@@ -40,7 +40,7 @@ export default async (
                 (await emoji.getProperty("alt")).toString().replace("JSHandle:", "")
             );
         }
-        tweettext = extractText(tweettext);
+        tweettext = extractText(tweettext + (retweetLink ? `\n\n${retweetLink}` : ""));
     }
         
     const tweetimage = await page.$(
@@ -74,7 +74,7 @@ export default async (
     await page.close();
     const insertEmbed: { url: string; description: string; type: "none" | "video" | "image"; src?: string; embed_color: string } = {
         url,
-        description: `Tweet by ${username}: ${tweettext}${retweetLink ? `\n\n${retweetLink}` : ""}`,
+        description: `Tweet by ${username}: ${tweettext},
         type,
         embed_color: "#1D9BF0"
     }
