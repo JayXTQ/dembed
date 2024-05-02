@@ -55,13 +55,14 @@ export default async (
     }
     if (!src) return null;
     await page.close();
-    const embed = createEmbed(
+    const embed = createEmbed({
         url,
-        post ? "image" : "video",
-        `Post by ${user}: ${description}`,
+        type: post ? "image" : "video",
+        description: `Post by ${user}: ${description}`,
         src,
         resolution,
-    );
+        embed_color: "#E4405F",
+    });
     return embed;
 };
 

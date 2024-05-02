@@ -1,9 +1,21 @@
+export type Options = {
+    url: string;
+    description: string;
+    embed_color?: string;
+    title?: string;
+} & ({
+    type: "video";
+    src: string;
+    resolution?: { w: number; h: number };
+} | {
+    type: "image";
+    src: string;
+} | {
+    type: "none";
+});
+
 export default (
-    url: string,
-    type: "image" | "video" | "none",
-    description: string,
-    src?: string,
-    resolution?: { w: number; h: number },
+    options: Options,
 ) => {
     type Metas = Array<
         | { name: string; content: string | undefined }
@@ -11,56 +23,51 @@ export default (
     >;
     const metas: Metas = [
         {
-            property: "og:title",
-            content: "dembed",
-        },
-        {
             property: "og:url",
-            content: url,
+            content: options.url,
         },
         {
             name: "twitter:url",
-            content: url,
-        },
-        {
-            name: "twitter:title",
-            content: "dembed",
+            content: options.url,
         },
         {
             property: "og:description",
-            content: description,
+            content: options.description,
         },
         {
             property: "og:site_name",
             content: "dembed",
         },
     ];
-    const imageMetas: Metas = [
+
+    let insertMetas: Metas = [];
+
+    if (options.type === "image") insertMetas = [
         {
             name: "twitter:card",
             content: "summary_large_image",
         },
         {
             name: "twitter:image",
-            content: src,
+            content: options.src,
         },
     ];
-    const videoMetas: Metas = [
+    else if (options.type === "video") insertMetas = [
         {
             name: "twitter:card",
             content: "player",
         },
         {
             name: "twitter:player:width",
-            content: resolution?.w.toString() || "0",
+            content: options.resolution?.w.toString() || "0",
         },
         {
             name: "twitter:player:height",
-            content: resolution?.h.toString() || "0",
+            content: options.resolution?.h.toString() || "0",
         },
         {
             name: "twitter:player:stream",
-            content: src,
+            content: options.src,
         },
         {
             name: "twitter:player:stream:content_type",
@@ -68,11 +75,11 @@ export default (
         },
         {
             property: "og:video",
-            content: src,
+            content: options.src,
         },
         {
             property: "og:video:secure_url",
-            content: src,
+            content: options.src,
         },
         {
             property: "og:video:type",
@@ -80,16 +87,29 @@ export default (
         },
         {
             property: "og:video:width",
-            content: resolution?.w.toString() || "0",
+            content: options.resolution?.w.toString() || "0",
         },
         {
             property: "og:video:height",
-            content: resolution?.h.toString() || "0",
+            content: options.resolution?.h.toString() || "0",
         },
     ];
-    let insertMetas: Metas = [];
-    if (type === "image") insertMetas = imageMetas;
-    else if (type === "video") insertMetas = videoMetas;
+    if (options.embed_color) {
+        metas.push({
+            name: "theme-color",
+            content: options.embed_color,
+        });
+    }
+    if (options.title) {
+        metas.push({
+            property: "og:title",
+            content: options.title,
+        });
+        metas.push({
+            name: "twitter:title",
+            content: options.title,
+        });
+    }
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -112,10 +132,10 @@ export default (
             )
             .join("\n     ")}
         ${
-            type === "video"
+            options.type === "video"
                 ? `<link rel="alternate"
-		href="https://dembed.page/oembed?author_name=${encodeURIComponent(description)}&author_url=${encodeURIComponent(url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
-		type="application/json+oembed" title="${description}" />`
+		href="https://dembed.page/oembed?author_name=${encodeURIComponent(options.description)}&author_url=${encodeURIComponent(options.url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
+		type="application/json+oembed" title="${options.description}" />`
                 : ""
         }
     </head>

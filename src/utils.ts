@@ -10,7 +10,7 @@ export function extractText(html: string): string {
             splitLines[splitLines.indexOf(line)].slice(0, -1);
     }
     html = splitLines.join(" ");
-    if (html.length >= 200) html = html.slice(0, 200) + "...";
+    if (html.length >= 300) html = html.slice(0, 300) + "...";
     return html;
 }
 

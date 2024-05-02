@@ -1,5 +1,5 @@
 import { Browser } from "puppeteer";
-import createEmbed from "../createEmbed";
+import createEmbed, { type Options } from "../createEmbed";
 import { extractText } from "../utils";
 
 export default async (
@@ -16,6 +16,17 @@ export default async (
         (await page
             .waitForSelector(`${loc} div[data-testid="tweetText"]`)
             .catch(() => "")) ?? "";
+    
+    const retweetText = await page.$(`${loc} div[role="link"] a[data-testid="tweet-text-show-more-link"]`);
+    let retweetLink = "";
+    if(retweetText) {
+        retweetLink = `https://twitter.com${(await page.evaluate((retweetText) => retweetText.getAttribute("href"), retweetText)) ?? ""}`;
+        await page.evaluate((sel) => {
+            let element = document.querySelector(sel);
+            if (element) element.parentNode?.removeChild(element);
+        }, `${loc} div[role="link"]`);
+    };
+
     if (typeof tweettext !== "string"){
         tweettext =
             (await page.evaluate(
@@ -60,12 +71,19 @@ export default async (
     const username = (
         await page.evaluate((user) => user.textContent, user)
     )?.split(" on X")[0];
-    console.log(type, src)
-    const embed = createEmbed(
+    await page.close();
+    const insertEmbed: { url: string; description: string; type: "none" | "video" | "image"; src?: string; embed_color: string } = {
         url,
+        description: `Tweet by ${username}: ${tweettext}${retweetLink ? `\n\n${retweetLink}` : ""}`,
         type,
-        `Tweet by ${username}: ${tweettext}`,
-        !!src ? src : undefined,
+        embed_color: "#1D9BF0"
+    }
+    if(type === "image" || type === "video"){
+        insertEmbed.src = src as string;
+    }
+
+    const embed = createEmbed(
+        insertEmbed as Options,
     );
     return embed;
 };

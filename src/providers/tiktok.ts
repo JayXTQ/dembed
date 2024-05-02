@@ -39,17 +39,18 @@ export default async (
         );
     url = page.url().split("?")[0]; // when it's a vm.tiktok.com address, it will redirect to tiktok.com with query params, so just remove them here :3
     await page.close();
-    const embed = createEmbed(
+    const embed = createEmbed({ 
         url,
-        "video",
-        `Post by ${user}: ${description}`,
-        "/video/tiktok/" +
+        type: "video",
+        description: `Post by ${user}: ${description}`,
+        src: "/video/tiktok/" +
             url
                 .split("https://www.tiktok.com/")[1]
                 .split("?")[0]
                 .split("/")
                 .at(-1),
-    );
+        embed_color: "#000000"
+    });
     return embed;
 };
 
