@@ -54,7 +54,8 @@ app.get("/http*", async (req: Request, res: Response) => {
     if (!provider) return res.status(400).send("Bad Request");
     provider = provider.split(".").at(-2) ?? null;
     if (!provider) return res.status(400).send("Bad Request");
-    console.log(provider)
+    console.log("url provider", provider)
+    console.log("alternatives provider", alternatives[provider])
     let providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile)
         providerFile = await getProvider(alternatives[provider]);
