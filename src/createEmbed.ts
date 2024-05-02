@@ -1,13 +1,13 @@
 export default (
     url: string,
-    src: string,
-    type: "image" | "video",
+    type: "image" | "video" | "none",
     description: string,
+    src?: string,
     resolution?: { w: number; h: number },
 ) => {
     type Metas = Array<
-        | { name: string; content: string }
-        | { property: string; content: string }
+        | { name: string; content: string | undefined }
+        | { property: string; content: string | undefined }
     >;
     const metas: Metas = [
         {
@@ -87,6 +87,9 @@ export default (
             content: resolution?.h.toString() || "0",
         },
     ];
+    let insertMetas: Metas = [];
+    if (type === "image") insertMetas = imageMetas;
+    else if (type === "video") insertMetas = videoMetas;
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -100,28 +103,21 @@ export default (
                         .join(" ")} />`,
             )
             .join("\n       ")}
+        ${insertMetas
+            .map(
+                (meta) =>
+                    `<meta ${Object.keys(meta)
+                        .map((key) => `${key}="${meta[key]}"`)
+                        .join(" ")} />`,
+            )
+            .join("\n     ")}
         ${
-            type === "image"
-                ? imageMetas
-                      .map(
-                          (meta) =>
-                              `<meta ${Object.keys(meta)
-                                  .map((key) => `${key}="${meta[key]}"`)
-                                  .join(" ")} />`,
-                      )
-                      .join("\n     ")
-                : videoMetas
-                      .map(
-                          (meta) =>
-                              `<meta ${Object.keys(meta)
-                                  .map((key) => `${key}="${meta[key]}"`)
-                                  .join(" ")} />`,
-                      )
-                      .join("\n     ")
-        }
-        ${type === "video" ? `<link rel="alternate"
+            type === "video"
+                ? `<link rel="alternate"
 		href="https://dembed.page/oembed?author_name=${encodeURIComponent(description)}&author_url=${encodeURIComponent(url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
-		type="application/json+oembed" title="${description}" />` : ""}
+		type="application/json+oembed" title="${description}" />`
+                : ""
+        }
     </head>
     <body>
         why u peekin?

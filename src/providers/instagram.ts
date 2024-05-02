@@ -6,7 +6,6 @@ export default async (
     browser: Browser,
     url: string,
 ): Promise<string | null> => {
-    url = url.split("?")[0];
     const post = url.split("instagram.com/")[1].split("/")[0] === "p";
     if (!post && url.split("instagram.com/")[1].split("/")[0] !== "reel")
         return null;
@@ -22,7 +21,10 @@ export default async (
     )?.split(" |")[0];
     let description: string | ElementHandle | null = await page
         .waitForSelector("html article h1")
-        .catch(() => null);
+        .catch(() => {
+            console.log("Request may have been blocked: Instagram");
+            return null;
+        });
     if (!description) description = "No description found.";
     if (typeof description !== "string")
         description = extractText(
@@ -51,9 +53,9 @@ export default async (
     await page.close();
     const embed = createEmbed(
         url,
-        src,
         post ? "image" : "video",
         `Post by ${user}: ${description}`,
+        src,
         resolution,
     );
     return embed;

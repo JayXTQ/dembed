@@ -10,6 +10,7 @@ export default async (
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1920, height: 1080 });
+    await page.waitForSelector('span[data-e2e="browser-nickname"]');
     const username = await page.$$('span[data-e2e="browser-nickname"] > span');
     if (!username) return null;
     let user = "";
@@ -40,14 +41,14 @@ export default async (
     await page.close();
     const embed = createEmbed(
         url,
+        "video",
+        `Post by ${user}: ${description}`,
         "/video/tiktok/" +
             url
                 .split("https://www.tiktok.com/")[1]
                 .split("?")[0]
                 .split("/")
                 .at(-1),
-        "video",
-        `Post by ${user}: ${description}`,
     );
     return embed;
 };
