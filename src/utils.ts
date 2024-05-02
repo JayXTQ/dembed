@@ -1,6 +1,8 @@
 import { Response } from "express";
 
 export function extractText(html: string): string {
+    console.log(html)
+    html = html.replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/<br \/>/g, "\n");
     html = html.replace(/<[^>]*>/g, " ").replace(/\s{2,}/g, " ");
     const splitLines = html.split("\n");
     for (const line of splitLines) {
