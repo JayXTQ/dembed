@@ -63,6 +63,7 @@ export default async (
         resolution,
         embed_color: "#E4405F",
         title: `${user} on Instagram`,
+        username: user,
     });
     return embed;
 };

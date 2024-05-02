@@ -51,6 +51,7 @@ export default async (
                 .at(-1),
         embed_color: "#000000",
         title: `${user} on TikTok`,
+        username: user,
     });
     return embed;
 };
