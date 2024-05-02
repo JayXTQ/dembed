@@ -42,7 +42,12 @@ export default async (
         }
         let bannerlink: ElementHandle | string | null = await page.$(`${loc} div[data-testid="card.wrapper"] div[data-testid="card.layoutLarge.media"] a`)
         if(bannerlink && typeof bannerlink !== "string"){
-            bannerlink = await page.evaluate((bannerlink) => bannerlink.getAttribute("href"), bannerlink);
+            bannerlink = await page.evaluate((bannerlink) => bannerlink.getAttribute("href"), bannerlink) as string;
+            const newPage = await browser.newPage();
+            await newPage.goto(bannerlink);
+            await newPage.waitForSelector("html body")
+            bannerlink = newPage.url();
+            await newPage.close();
         }
         tweettext = extractText(tweettext + (retweetLink ? `\n\n${retweetLink}` : "") + (bannerlink ? `\n\n${bannerlink}` : ""));
     }
