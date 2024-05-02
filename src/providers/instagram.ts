@@ -14,14 +14,6 @@ export default async (
     await page.setViewport({ width: 1920, height: 1080 });
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
-    const username = await page.$("title");
-    if (!username) return null;
-    const user = (
-        await page.evaluate((username) => username.textContent, username)
-    )
-        ?.split(" |")[0]
-        .replace("Instagram video by ", "")
-        .split(" •")[0];
     let description: string | ElementHandle | null = await page
         .waitForSelector("html article h1", { timeout: 5000 })
         .catch(() => {
@@ -34,6 +26,16 @@ export default async (
                 .toString()
                 .replace("JSHandle:", ""),
         );
+    
+    const username = await page.$("title");
+    if (!username) return null;
+    const user = (
+        await page.evaluate((username) => username.textContent, username)
+    )
+        ?.split(" |")[0]
+        .replace("Instagram video by ", "")
+        .split(" •")[0];
+        
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {

@@ -12,11 +12,6 @@ export default async (
     await page.setViewport({ width: 1920, height: 1080 });
     let type: "image" | "video" | "none" = "none";
     let src = "";
-    const user = await page.$("title");
-    if (!user) return null;
-    const username = (
-        await page.evaluate((user) => user.textContent, user)
-    )?.split(" on X")[0];
     let tweettext =
         (await page
             .waitForSelector(`${loc} div[data-testid="tweetText"]`)
@@ -46,6 +41,11 @@ export default async (
             .toString()
             .replace("JSHandle:", "");
     }
+    const user = await page.$("title");
+    if (!user) return null;
+    const username = (
+        await page.evaluate((user) => user.textContent, user)
+    )?.split(" on X")[0];
     const embed = createEmbed(
         url,
         type,
