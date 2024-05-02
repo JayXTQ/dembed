@@ -1,22 +1,10 @@
-import { Browser, ElementHandle } from "puppeteer";
+import { Browser, ElementHandle, Page } from "puppeteer";
 import createEmbed, { type Options } from "../createEmbed";
 import { extractText } from "../utils";
 
-export default async (
-    browser: Browser,
-    url: string,
-): Promise<string | null> => {
-    const loc = 'html article[data-testid="tweet"]';
-    const page = await browser.newPage();
-    await page.goto(url);
-    await page.setViewport({ width: 1920, height: 1080 });
-    let type: "image" | "video" | "none" = "none";
-    let src: string | null = null;
-    let tweettext =
-        (await page
-            .waitForSelector(`${loc} div[data-testid="tweetText"]`)
-            .catch(() => "")) ?? "";
-    
+const loc = 'html article[data-testid="tweet"]';
+
+async function getRetweetLink(page: Page){
     const retweetText = await page.$(`${loc} div[role="link"] a[data-testid="tweet-text-show-more-link"]`);
     let retweetLink = "";
     if(retweetText) {
@@ -26,7 +14,10 @@ export default async (
             if (element) element.parentNode?.removeChild(element);
         }, `${loc} div[role="link"]`);
     };
+    return retweetLink;
+}
 
+async function getTweetText(browser: Browser, page: Page, tweettext: ElementHandle | string, retweetLink: string | null){
     if (typeof tweettext !== "string"){
         tweettext =
             (await page.evaluate(
@@ -51,7 +42,29 @@ export default async (
         }
         tweettext = extractText(tweettext + (retweetLink ? `\n\n${retweetLink}` : "") + (bannerlink ? `\n\n${bannerlink}` : ""));
     }
-        
+    return tweettext;
+}
+
+export default async (
+    browser: Browser,
+    url: string,
+): Promise<string | null> => {
+    const page = await browser.newPage();
+    await page.goto(url);
+    await page.setViewport({ width: 1920, height: 1080 });
+    
+    let type: "image" | "video" | "none" = "none";
+    let src: string | null = null;
+
+    let tweettext =
+        (await page
+            .waitForSelector(`${loc} div[data-testid="tweetText"]`)
+            .catch(() => "")) ?? "";
+    
+    const retweetLink = await getRetweetLink(page);
+    
+    tweettext = await getTweetText(browser, page, tweettext, retweetLink);
+
     const tweetimage = await page.$(
         `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
     );
