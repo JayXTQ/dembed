@@ -12,3 +12,7 @@ This is done by adding a simple prefix to the URL. For instance, rather than usi
 ## Contributing
 
 If you would like to contribute to this project, please feel free to open a pull request. I will review it as soon as possible, this can be for bug fixes or for adding providers, or even making documentation!
+
+## Support
+
+Please join my Discord to get help, you can also suggest sites to add! https://discord.gg/SySBmAQGmR
