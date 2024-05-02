@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import "dotenv/config";
 import puppeteer from "puppeteer";
 import type { IndexProvider as Provider } from "./types.ts";
+import { setSecurityHeaders } from "./utils.ts";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ const browser = puppeteer.launch({
 });
 
 app.get("/http*", async (req: Request, res: Response) => {
+    setSecurityHeaders(res);
     const url = req.url.slice(1);
     if (
         !req.headers["user-agent"]?.includes("Discordbot")
@@ -48,7 +50,7 @@ app.get("/http*", async (req: Request, res: Response) => {
     }
     let provider = url.split("/")[2];
     if (!provider) return res.status(400).send("Bad Request");
-    if(provider.split(".").length > 2) provider = provider.split(".")[1];
+    if (provider.split(".").length > 2) provider = provider.split(".")[1];
     const providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile) {
         return res.status(404).send("Provider not found");
@@ -59,6 +61,7 @@ app.get("/http*", async (req: Request, res: Response) => {
 });
 
 app.get("/video/:provider/*", async (req: Request, res: Response) => {
+    setSecurityHeaders(res);
     const provider = req.params.provider;
     const data = req.url.split(`/${provider}/`)[1];
     if (!data) return res.status(400).send("Bad Request");
@@ -72,9 +75,10 @@ app.get("/video/:provider/*", async (req: Request, res: Response) => {
 });
 
 app.get("/oembed", async (req: Request, res: Response) => {
+    setSecurityHeaders(res);
     const url = new URL(req.url, `${req.protocol}://${req.headers.host}`);
     const searchParams = Object.fromEntries(url.searchParams.entries());
-    for(const key in searchParams) {
+    for (const key in searchParams) {
         searchParams[key] = decodeURIComponent(searchParams[key]);
     }
     return res.json(searchParams);
