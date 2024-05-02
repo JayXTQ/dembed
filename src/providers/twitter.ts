@@ -1,5 +1,6 @@
 import { Browser } from "puppeteer";
 import createEmbed from "../createEmbed";
+import { extractText } from "../utils";
 
 export default async (
     browser: Browser,
@@ -20,12 +21,22 @@ export default async (
         (await page
             .waitForSelector(`${loc} div[data-testid="tweetText"]`)
             .catch(() => "")) ?? "";
-    if (typeof tweettext !== "string")
+    if (typeof tweettext !== "string"){
         tweettext =
             (await page.evaluate(
-                (tweettext) => tweettext.textContent,
+                (tweettext) => tweettext.innerHTML,
                 tweettext,
             )) ?? "";
+        const emojis = await page.$$(`${loc} div[data-testid="tweetText"] img`);
+        for(const emoji of emojis){
+            tweettext = tweettext.replace(
+                (await emoji.getProperty("outerHTML")).toString().replace("JSHandle:", ""),
+                (await emoji.getProperty("alt")).toString().replace("JSHandle:", "")
+            );
+        }
+        tweettext = extractText(tweettext);
+    }
+        
     const tweetimage = await page.$(
         `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
     );
