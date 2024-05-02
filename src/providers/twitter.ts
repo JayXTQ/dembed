@@ -72,11 +72,12 @@ export default async (
         await page.evaluate((user) => user.textContent, user)
     )?.split(" on X")[0];
     await page.close();
-    const insertEmbed: { url: string; description: string; type: "none" | "video" | "image"; src?: string; embed_color: string } = {
+    const insertEmbed: { url: string; description: string; type: "none" | "video" | "image"; src?: string; embed_color: string; title: string } = {
         url,
-        description: `Tweet by ${username}: ${tweettext}`,
+        description: tweettext,
         type,
-        embed_color: "#1D9BF0"
+        embed_color: "#1D9BF0",
+        title: `${username} on Twitter`
     }
     if(type === "image" || type === "video"){
         insertEmbed.src = src as string;

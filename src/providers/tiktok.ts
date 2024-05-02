@@ -42,14 +42,15 @@ export default async (
     const embed = createEmbed({ 
         url,
         type: "video",
-        description: `Post by ${user}: ${description}`,
+        description,
         src: "/video/tiktok/" +
             url
                 .split("https://www.tiktok.com/")[1]
                 .split("?")[0]
                 .split("/")
                 .at(-1),
-        embed_color: "#000000"
+        embed_color: "#000000",
+        title: `${user} on TikTok`,
     });
     return embed;
 };

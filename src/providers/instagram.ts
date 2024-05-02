@@ -58,10 +58,11 @@ export default async (
     const embed = createEmbed({
         url,
         type: post ? "image" : "video",
-        description: `Post by ${user}: ${description}`,
+        description,
         src,
         resolution,
         embed_color: "#E4405F",
+        title: `${user} on Instagram`,
     });
     return embed;
 };
