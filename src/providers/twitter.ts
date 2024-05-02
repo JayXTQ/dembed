@@ -11,7 +11,7 @@ export default async (
     await page.goto(url);
     await page.setViewport({ width: 1920, height: 1080 });
     let type: "image" | "video" | "none" = "none";
-    let src = "";
+    let src: string | null = null;
     let tweettext =
         (await page
             .waitForSelector(`${loc} div[data-testid="tweetText"]`)
@@ -60,6 +60,7 @@ export default async (
     const username = (
         await page.evaluate((user) => user.textContent, user)
     )?.split(" on X")[0];
+    console.log(type, src)
     const embed = createEmbed(
         url,
         type,
