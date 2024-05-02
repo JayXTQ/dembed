@@ -2,8 +2,7 @@ import { Response } from "express";
 
 export function extractText(html: string): string {
     html = html.replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/<br \/>/g, "\n");
-    html = html.replace(/<[^>]*>/g, " ").replace(/\s{2,}/g, " ");
-    console.log('html 1', html)
+    html = html.replace(/<[^>]*>/g, "");
     const splitLines = html.split("\n");
     for (const line of splitLines) {
         if (line.startsWith('"') || line.startsWith(" "))
@@ -12,7 +11,7 @@ export function extractText(html: string): string {
             splitLines[splitLines.indexOf(line)].slice(0, -1);
     }
     html = splitLines.join("\n");
-    console.log('html 2', html)
+    console.log(html)
     if (html.length >= 500) html = html.slice(0, 500) + "...";
     return html;
 }

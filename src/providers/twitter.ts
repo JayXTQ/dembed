@@ -20,7 +20,7 @@ export default async (
     const retweetText = await page.$(`${loc} div[role="link"] a[data-testid="tweet-text-show-more-link"]`);
     let retweetLink = "";
     if(retweetText) {
-        retweetLink = await page.evaluate((retweetText) => retweetText.getAttribute("href"), retweetText) ?? "";
+        retweetLink = 'https://twitter.com' + await page.evaluate((retweetText) => retweetText.getAttribute("href"), retweetText) ?? "";
         await page.evaluate((sel) => {
             let element = document.querySelector(sel);
             if (element) element.parentNode?.removeChild(element);
