@@ -41,6 +41,20 @@ export default async (
             .toString()
             .replace("JSHandle:", "");
     }
+    
+    const tweetvideo = await page.$(
+        `${loc} div[data-testid="tweetPhoto"] div[data-testid="videoPlayer"] div[data-testid="videoComponent"] video source`,
+    );
+    if(tweetvideo){
+        type = "video";
+        const url_ = new URL(page.url())
+        let pathname = url_.pathname
+        if(pathname.endsWith("/")){
+            pathname = `https://d.fxtwitter.com${pathname.slice(0, -1)}`
+        }
+        src = `https://d.fxtwitter.com/${pathname}.mp4`
+    }
+
     const user = await page.$("title");
     if (!user) return null;
     const username = (
