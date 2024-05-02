@@ -52,7 +52,7 @@ export default async (
         if(pathname.endsWith("/")){
             pathname = pathname.slice(0, -1)
         }
-        src = `/video/twitter/${pathname}`
+        src = `/video/twitter/${pathname.slice(1)}`;
     }
 
     const user = await page.$("title");
