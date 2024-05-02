@@ -1,4 +1,4 @@
-import { Browser } from "puppeteer";
+import { Browser, ElementHandle } from "puppeteer";
 import createEmbed, { type Options } from "../createEmbed";
 import { extractText } from "../utils";
 
@@ -40,7 +40,11 @@ export default async (
                 (await emoji.getProperty("alt")).toString().replace("JSHandle:", "")
             );
         }
-        tweettext = extractText(tweettext + (retweetLink ? `\n\n${retweetLink}` : ""));
+        let bannerlink: ElementHandle | string | null = await page.$(`${loc} div[data-testid="card.wrapper"] div[data-testid="card.layoutLarge.media"] a`)
+        if(bannerlink && typeof bannerlink !== "string"){
+            bannerlink = await page.evaluate((bannerlink) => bannerlink.getAttribute("href"), bannerlink);
+        }
+        tweettext = extractText(tweettext + (retweetLink ? `\n\n${retweetLink}` : "") + (bannerlink ? `\n\n${bannerlink}` : ""));
     }
         
     const tweetimage = await page.$(

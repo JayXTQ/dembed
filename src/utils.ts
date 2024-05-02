@@ -11,7 +11,6 @@ export function extractText(html: string): string {
             splitLines[splitLines.indexOf(line)].slice(0, -1);
     }
     html = splitLines.join("\n");
-    console.log(html)
     if (html.length >= 500) html = html.slice(0, 500) + "...";
     return html;
 }
