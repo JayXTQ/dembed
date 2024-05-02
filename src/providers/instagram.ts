@@ -20,7 +20,7 @@ export default async (
         await page.evaluate((username) => username.textContent, username)
     )?.split(" |")[0];
     let description: string | ElementHandle | null = await page
-        .waitForSelector("html article h1")
+        .waitForSelector("html article h1", { timeout: 5000 })
         .catch(() => {
             return null;
         });
