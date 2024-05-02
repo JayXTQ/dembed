@@ -12,7 +12,6 @@ export default async (
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1920, height: 1080 });
-    console.log(await page.content());
     let src = "";
     let resolution: { w: number; h: number } | undefined = undefined;
     const username = await page.$("title");
@@ -23,7 +22,6 @@ export default async (
     let description: string | ElementHandle | null = await page
         .waitForSelector("html article h1")
         .catch(() => {
-            console.log("Request may have been blocked: Instagram");
             return null;
         });
     if (!description) description = "No description found.";
@@ -50,6 +48,7 @@ export default async (
                     .replace("JSHandle:", "");
         }
     }
+    console.log(src);
     if (!src) return null;
     await page.close();
     const embed = createEmbed(
