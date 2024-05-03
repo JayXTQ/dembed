@@ -16,8 +16,8 @@ app.notFound(async (c) => {
     return c.text("Not Found", 404);
 });
 
-app.get("/", async (c) => {
-    c.redirect("https://github.com/JayXTQ/dembed");
+app.get("/", (c) => {
+    return c.redirect("https://github.com/JayXTQ/dembed");
 });
 
 async function getProvider(provider: string) {
