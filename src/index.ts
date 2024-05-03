@@ -22,7 +22,9 @@ app.get("/", (c) => {
 
 async function getProvider(provider: string) {
     try {
-        const providerFile: Provider = await import(`./providers/${provider}`);
+        const providerFile: Provider = await import(
+            `./providers/${provider}.ts`
+        );
         return providerFile;
     } catch (error) {
         return null;
@@ -54,22 +56,22 @@ app.get("/http*", async (c) => {
             url,
         )
     ) {
-        return await err400(c)
+        return await err400(c);
     }
     let provider: string | null = url.split("/")[2];
-    if (!provider) return await err400(c)
-    provider = provider.split(".").at(-2) ?? null;
-    if (!provider) return await err400(c)
+    if (!provider) return await err400(c);
+    provider = provider.split(".").at(-2)?.trim() ?? null;
+    if (!provider) return await err400(c);
     console.log("url provider", provider);
     console.log("alternatives provider", alternatives[provider]);
     let providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile)
         providerFile = await getProvider(alternatives[provider]);
     if (providerFile == null || !providerFile) {
-        return await err404(c, "Provider");
+        return await err404(c, "Provider file");
     }
     const response = await providerFile.default(await browser, url);
-    if (!response) return await err400(c)
+    if (!response) return await err400(c);
     return c.html(response);
 });
 
@@ -114,5 +116,5 @@ app.get("/oembed", async (c) => {
 
 serve({
     fetch: app.fetch,
-    port
-})
+    port,
+});
