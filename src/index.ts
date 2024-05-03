@@ -54,8 +54,8 @@ app.get("/http*", async (req: Request, res: Response) => {
     if (!provider) return res.status(400).send("Bad Request");
     provider = provider.split(".").at(-2) ?? null;
     if (!provider) return res.status(400).send("Bad Request");
-    console.log("url provider", provider)
-    console.log("alternatives provider", alternatives[provider])
+    console.log("url provider", provider);
+    console.log("alternatives provider", alternatives[provider]);
     let providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile)
         providerFile = await getProvider(alternatives[provider]);
@@ -93,7 +93,7 @@ app.get("/image/:provider/*", async (req: Request, res: Response) => {
     const imgbuffer = await providerFile.image(await browser, data);
     if (!imgbuffer) return res.status(400).send("Bad Request");
     res.setHeader("Content-Type", "image/png");
-    return res.send(imgbuffer);
+    return res.end(imgbuffer, "binary");
 });
 
 app.get("/oembed", async (req: Request, res: Response) => {
