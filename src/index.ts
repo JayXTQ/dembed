@@ -42,7 +42,7 @@ const browser = puppeteer.launch({
 });
 
 app.get("/http*", async (c) => {
-    const url = c.req.url.slice(1);
+    const url = new URL(c.req.url).pathname.slice(1);
     if (
         !c.req.header("User-Agent")?.includes("Discordbot")
         // "Mozilla/5.0 (compatible; Discordbot/2.0; +discordapp.com)"
