@@ -81,6 +81,21 @@ app.get("/video/:provider/*", async (req: Request, res: Response) => {
     return res.redirect(src);
 });
 
+app.get("/image/:provider/*", async (req: Request, res: Response) => {
+    setSecurityHeaders(res);
+    const provider = req.params.provider;
+    const data = req.url.split(`/${provider}/`)[1];
+    if (!data) return res.status(400).send("Bad Request");
+    const providerFile = await getProvider(provider);
+    if (providerFile == null || !providerFile) {
+        return res.status(404).send("Provider not found");
+    }
+    const imgbuffer = await providerFile.image(await browser, data);
+    if (!imgbuffer) return res.status(400).send("Bad Request");
+    res.setHeader("Content-Type", "image/png");
+    return res.send(imgbuffer);
+});
+
 app.get("/oembed", async (req: Request, res: Response) => {
     setSecurityHeaders(res);
     const url = new URL(req.url, `${req.protocol}://${req.headers.host}`);

@@ -3,6 +3,7 @@ import { Browser } from "puppeteer";
 export type IndexProvider = {
     default: Providers;
     video: VideoProviders;
+    image: ImageProviders;
 };
 
 export type Providers = (
@@ -14,3 +15,8 @@ export type VideoProviders = (
     browser: Browser,
     data: string,
 ) => Promise<string | null>;
+
+export type ImageProviders = (
+    browser: Browser,
+    data: string,
+) => Promise<Buffer | null>;

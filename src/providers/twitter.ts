@@ -1,6 +1,8 @@
 import { Browser, ElementHandle, Page } from "puppeteer";
 import createEmbed, { type Options } from "../createEmbed";
 import { extractText } from "../utils";
+import images from "images";
+import axios from "axios";
 
 const loc = 'html article[data-testid="tweet"]';
 
@@ -65,14 +67,24 @@ export default async (
     
     tweettext = await getTweetText(browser, page, tweettext, retweetLink);
 
-    const tweetimage = await page.$(
+    const url_ = new URL(page.url())
+    let pathname = url_.pathname
+    if(pathname.endsWith("/")){
+        pathname = pathname.slice(0, -1)
+    }
+
+    const tweetimage = await page.$$(
         `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
     );
     if (tweetimage) {
         type = "image";
-        src = (await tweetimage.getProperty("src"))
-            .toString()
-            .replace("JSHandle:", "");
+        if(tweetimage.length === 1)
+            src = (await tweetimage[0].getProperty("src"))
+                .toString()
+                .replace("JSHandle:", "");
+        else {
+            src = `/image/twitter/${pathname.slice(1)}`;
+        }
     }
     
     const tweetvideo = await page.$(
@@ -80,11 +92,6 @@ export default async (
     );
     if(tweetvideo){
         type = "video";
-        const url_ = new URL(page.url())
-        let pathname = url_.pathname
-        if(pathname.endsWith("/")){
-            pathname = pathname.slice(0, -1)
-        }
         src = `/video/twitter/${pathname.slice(1)}`;
     }
 
@@ -121,3 +128,42 @@ export const video = async (
     }
     return `https://d.fxtwitter.com/${data}.mp4`;
 };
+
+async function getBuffer(url: string){
+    return axios
+        .get(url, {
+            responseType: 'arraybuffer',
+        })
+        .then((response) => Buffer.from(response.data));
+}
+
+export const image = async (
+    browser: Browser,
+    data: string,
+): Promise<Buffer | null> => {
+    const page = await browser.newPage();
+    await page.goto(`https://twitter.com/${data}`);
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.waitForSelector(`${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`);
+    const tweetimages = await page.$$(
+        `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
+    );
+    if (!tweetimages) return null;
+    const imageBuffers = await Promise.all(tweetimages.map(async (tweetimage) => {
+        return await getBuffer((await tweetimage.getProperty("src"))
+            .toString()
+            .replace("JSHandle:", ""));
+    }));
+    await page.close();
+    let imageMerged = images(imageBuffers[0]).resize(500, 500);
+    const imagesMerge = imageBuffers.slice(1, 4);
+    for(const tweetimage of imagesMerge){
+        if(imagesMerge.indexOf(tweetimage) === 0)
+            imageMerged = imageMerged.draw(images(tweetimage).resize(500,500), 500, 0);
+        else if(imagesMerge.indexOf(tweetimage) === 1)
+            imageMerged = imageMerged.draw(images(tweetimage).resize(500,500), 0, 500);
+        else
+            imageMerged = imageMerged.draw(images(tweetimage).resize(500,500), 500, 500);
+    }
+    return imageMerged.encode("png");
+}
