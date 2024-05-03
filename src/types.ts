@@ -14,9 +14,9 @@ export type Providers = (
 export type VideoProviders = (
     browser: Browser,
     data: string,
-) => Promise<string | null>;
+) => Promise<Buffer | string | null>;
 
 export type ImageProviders = (
     browser: Browser,
     data: string,
-) => Promise<Buffer | null>;
+) => Promise<Buffer | string | null>;

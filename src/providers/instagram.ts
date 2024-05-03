@@ -1,6 +1,6 @@
 import { ElementHandle } from "puppeteer";
 import createEmbed from "../createEmbed.ts";
-import { extractText, getProperty } from "../utils.ts";
+import { extractText, getBuffer, getProperty } from "../utils.ts";
 import { VideoProviders, Providers } from "../types.ts";
 
 export default (async (browser, url) => {
@@ -68,6 +68,6 @@ export const video: VideoProviders = async (browser, data) => {
     if (!video) return null;
     let src = await page.evaluate((video) => video.src, video);
     await page.close();
-    src = `https://envoy.lol/${src}`;
-    return src;
+    const buffer = await getBuffer(src);
+    return buffer;
 };

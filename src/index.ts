@@ -76,9 +76,11 @@ app.get("/video/:provider/*", async (req: Request, res: Response) => {
     if (providerFile == null || !providerFile) {
         return res.status(404).send("Provider not found");
     }
-    const src = await providerFile.video(await browser, data);
-    if (!src) return res.status(400).send("Bad Request");
-    return res.redirect(src);
+    const response = await providerFile.video(await browser, data);
+    if (!response) return res.status(400).send("Bad Request");
+    if (typeof response === "string") return res.redirect(response);
+    res.setHeader("Content-Type", "video/mp4");
+    return res.end(response, "binary");
 });
 
 app.get("/image/:provider/*", async (req: Request, res: Response) => {
@@ -90,10 +92,11 @@ app.get("/image/:provider/*", async (req: Request, res: Response) => {
     if (providerFile == null || !providerFile) {
         return res.status(404).send("Provider not found");
     }
-    const imgbuffer = await providerFile.image(await browser, data);
-    if (!imgbuffer) return res.status(400).send("Bad Request");
+    const response = await providerFile.image(await browser, data);
+    if (!response) return res.status(400).send("Bad Request");
+    if (typeof response === "string") return res.redirect(response);
     res.setHeader("Content-Type", "image/png");
-    return res.end(imgbuffer, "binary");
+    return res.end(response, "binary");
 });
 
 app.get("/oembed", async (req: Request, res: Response) => {
