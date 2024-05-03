@@ -1,7 +1,13 @@
 import { Response } from "express";
+import sharp from "sharp";
+import axios from "axios";
+import { ElementHandle } from "puppeteer";
 
 export function extractText(html: string): string {
-    html = html.replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/<br \/>/g, "\n");
+    html = html
+        .replace(/<br>/g, "\n")
+        .replace(/<br\/>/g, "\n")
+        .replace(/<br \/>/g, "\n");
     html = html.replace(/<[^>]*>/g, "");
     const splitLines = html.split("\n");
     for (const line of splitLines) {
@@ -33,4 +39,57 @@ export function setSecurityHeaders(res: Response) {
         "Permissions-Policy",
         "geolocation=(), microphone=(), camera=()",
     );
+}
+
+export async function gridImages(images: Buffer[]): Promise<Buffer> {
+    const targetHeight = images.length > 2 ? 1000 : 500;
+    let compositeImage = sharp({
+        create: {
+            width: 1000,
+            height: targetHeight,
+            channels: 4,
+            background: { r: 255, g: 255, b: 255, alpha: 1 },
+        },
+    });
+
+    const imageComposites = await Promise.all(
+        images.map(async (buffer, index) => {
+            const targetWidth = 500;
+            const resizedBuffer = await sharp(buffer)
+                .resize(targetWidth)
+                .toBuffer();
+            const row = Math.floor(index / 2);
+            const col = index % 2;
+            const x = col * targetWidth;
+            const y = row * (targetHeight / 2);
+
+            return {
+                input: resizedBuffer,
+                left: x,
+                top: y,
+            };
+        }),
+    );
+
+    // Composite the images onto the initial blank canvas
+    const finalImageBuffer = await compositeImage
+        .composite(imageComposites)
+        .png()
+        .toBuffer();
+
+    return finalImageBuffer;
+}
+
+export async function getBuffer(url: string) {
+    return axios
+        .get(url, {
+            responseType: "arraybuffer",
+        })
+        .then((response) => Buffer.from(response.data));
+}
+
+export async function getProperty(element: ElementHandle, property: string) {
+    return (await element.getProperty(property))
+        .toString()
+        .replace("JSHandle:", "");
 }

@@ -1,11 +1,9 @@
-import { Browser, ElementHandle } from "puppeteer";
+import { ElementHandle } from "puppeteer";
 import createEmbed from "../createEmbed.ts";
-import { extractText } from "../utils.ts";
+import { extractText, getProperty } from "../utils.ts";
+import { VideoProviders, Providers } from "../types.ts";
 
-export default async (
-    browser: Browser,
-    url: string,
-): Promise<string | null> => {
+export default (async (browser, url) => {
     const post = url.split("instagram.com/")[1].split("/")[0] === "p";
     if (!post && url.split("instagram.com/")[1].split("/")[0] !== "reel")
         return null;
@@ -21,12 +19,8 @@ export default async (
         });
     if (!description) description = "No description found.";
     if (typeof description !== "string")
-        description = extractText(
-            (await description.getProperty("innerHTML"))
-                .toString()
-                .replace("JSHandle:", ""),
-        );
-    
+        description = extractText(await getProperty(description, "innerHTML"));
+
     const username = await page.$("title");
     if (!username) return null;
     const user = (
@@ -35,7 +29,7 @@ export default async (
         ?.split(" |")[0]
         .replace("Instagram video by ", "")
         .split(" •")[0];
-        
+
     if (!post) {
         src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
     } else {
@@ -48,9 +42,7 @@ export default async (
         for (const element of img) {
             const alt = (await element.getProperty("alt")).toString();
             if (alt.includes(`Photo by ${user} on`))
-                src = (await element.getProperty("src"))
-                    .toString()
-                    .replace("JSHandle:", "");
+                src = await getProperty(element, "src");
         }
     }
     if (!src) return null;
@@ -66,12 +58,9 @@ export default async (
         username: user,
     });
     return embed;
-};
+}) as Providers;
 
-export const video = async (
-    browser: Browser,
-    data: string,
-): Promise<string | null> => {
+export const video: VideoProviders = async (browser, data) => {
     const page = await browser.newPage();
     await page.goto(`https://www.instagram.com/${data}`);
     await page.setViewport({ width: 1080, height: 1024 });

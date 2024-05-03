@@ -1,11 +1,9 @@
-import { Browser, ElementHandle } from "puppeteer";
+import { ElementHandle } from "puppeteer";
 import createEmbed from "../createEmbed.ts";
-import { extractText } from "../utils.ts";
+import { extractText, getProperty } from "../utils.ts";
+import { VideoProviders, Providers } from "../types.ts";
 
-export default async (
-    browser: Browser,
-    url: string,
-): Promise<string | null> => {
+export default (async (browser, url) => {
     url = url.split("?")[0]; // prefer no tracking when possible
     const page = await browser.newPage();
     await page.goto(url);
@@ -32,18 +30,15 @@ export default async (
     );
     if (!description) description = "No description";
     if (typeof description !== "string")
-        description = extractText(
-            (await description.getProperty("innerHTML"))
-                .toString()
-                .replace("JSHandle:", ""),
-        );
+        description = extractText(await getProperty(description, "innerHTML"));
     url = page.url().split("?")[0]; // when it's a vm.tiktok.com address, it will redirect to tiktok.com with query params, so just remove them here :3
     await page.close();
-    const embed = createEmbed({ 
+    const embed = createEmbed({
         url,
         type: "video",
         description,
-        src: "/video/tiktok/" +
+        src:
+            "/video/tiktok/" +
             url
                 .split("https://www.tiktok.com/")[1]
                 .split("?")[0]
@@ -54,11 +49,8 @@ export default async (
         username: user,
     });
     return embed;
-};
+}) as Providers;
 
-export const video = async (
-    _: Browser,
-    data: string,
-): Promise<string | null> => {
+export const video: VideoProviders = async (_, data) => {
     return `https://tiktxk.com/meta/${data}/video`;
 };

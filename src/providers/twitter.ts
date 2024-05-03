@@ -1,8 +1,7 @@
 import { Browser, ElementHandle, Page } from "puppeteer";
 import createEmbed, { type Options } from "../createEmbed";
-import { extractText } from "../utils";
-import sharp from "sharp";
-import axios from "axios";
+import { extractText, gridImages, getBuffer, getProperty } from "../utils";
+import type { ImageProviders, Providers } from "../types";
 
 const loc = 'html article[data-testid="tweet"]';
 
@@ -41,12 +40,8 @@ async function getTweetText(
         const emojis = await page.$$(`${loc} div[data-testid="tweetText"] img`);
         for (const emoji of emojis) {
             tweettext = tweettext.replace(
-                (await emoji.getProperty("outerHTML"))
-                    .toString()
-                    .replace("JSHandle:", ""),
-                (await emoji.getProperty("alt"))
-                    .toString()
-                    .replace("JSHandle:", ""),
+                await getProperty(emoji, "outerHTML"),
+                await getProperty(emoji, "alt"),
             );
         }
         let bannerlink: ElementHandle | string | null = await page.$(
@@ -72,10 +67,7 @@ async function getTweetText(
     return tweettext;
 }
 
-export default async (
-    browser: Browser,
-    url: string,
-): Promise<string | null> => {
+export default (async (browser, url) => {
     const page = await browser.newPage();
     await page.goto(url);
     await page.setViewport({ width: 1920, height: 1080 });
@@ -104,9 +96,7 @@ export default async (
     if (tweetimage) {
         type = "image";
         if (tweetimage.length === 1)
-            src = (await tweetimage[0].getProperty("src"))
-                .toString()
-                .replace("JSHandle:", "");
+            src = await getProperty(tweetimage[0], "src");
         else {
             src = `/image/twitter/${pathname.slice(1)}`;
         }
@@ -148,7 +138,7 @@ export default async (
 
     const embed = createEmbed(insertEmbed as Options);
     return embed;
-};
+}) as Providers;
 
 export const video = async (
     _: Browser,
@@ -160,18 +150,7 @@ export const video = async (
     return `https://d.fxtwitter.com/${data}.mp4`;
 };
 
-async function getBuffer(url: string) {
-    return axios
-        .get(url, {
-            responseType: "arraybuffer",
-        })
-        .then((response) => Buffer.from(response.data));
-}
-
-export const image = async (
-    browser: Browser,
-    data: string,
-): Promise<Buffer | null> => {
+export const image: ImageProviders = async (browser, data) => {
     const url = `https://twitter.com/${data}`;
     const page = await browser.newPage();
     await page.goto(url);
@@ -188,49 +167,9 @@ export const image = async (
     if (!tweetimages) return null;
     const imageBuffers = await Promise.all(
         tweetimages.map(async (tweetimage) => {
-            return await getBuffer(
-                (await tweetimage.getProperty("src"))
-                    .toString()
-                    .replace("JSHandle:", ""),
-            );
+            return await getBuffer(await getProperty(tweetimage, "src"));
         }),
     );
     await page.close();
-
-    const targetHeight = tweetimages.length > 2 ? 1000 : 500;
-    let compositeImage = sharp({
-        create: {
-            width: 1000,
-            height: targetHeight,
-            channels: 4,
-            background: { r: 255, g: 255, b: 255, alpha: 1 },
-        },
-    });
-
-    const imageComposites = await Promise.all(
-        imageBuffers.map(async (buffer, index) => {
-            const targetWidth = 500;
-            const resizedBuffer = await sharp(buffer)
-                .resize(targetWidth)
-                .toBuffer();
-            const row = Math.floor(index / 2);
-            const col = index % 2;
-            const x = col * targetWidth;
-            const y = row * (targetHeight / 2);
-
-            return {
-                input: resizedBuffer,
-                left: x,
-                top: y,
-            };
-        }),
-    );
-
-    // Composite the images onto the initial blank canvas
-    const finalImageBuffer = await compositeImage
-        .composite(imageComposites)
-        .png()
-        .toBuffer();
-
-    return finalImageBuffer;
+    return await gridImages(imageBuffers);
 };
