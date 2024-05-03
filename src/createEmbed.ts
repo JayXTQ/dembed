@@ -135,13 +135,13 @@ export default (
         ${
             options.type === "video"
                 ? `<link rel="alternate"
-		href="https://dembed.page/oembed?author_name=${encodeURIComponent(options.description.length >= 250 ? options.description.slice(0,250) : options.description)}&author_url=${encodeURIComponent(options.url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
-		type="application/json+oembed" title="${options.username}" />`
+        href="https://dembed.page/oembed?author_name=${encodeURIComponent(options.description.length >= 250 ? options.description.slice(0,250) : options.description)}&author_url=${encodeURIComponent(options.url)}&provider_name=dembed&provider_url=https://dembed.page&title=dembed&type=link&version=1.0"
+        type="application/json+oembed" title="${options.username}" />`
                 : ""
         }
     </head>
     <body>
         why u peekin?
     </body>
-</html>`;
+</html>`
 };

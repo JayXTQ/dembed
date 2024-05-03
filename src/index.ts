@@ -1,16 +1,23 @@
-import express, { Request, Response } from "express";
 import "dotenv/config";
 import puppeteer from "puppeteer";
 import type { IndexProvider as Provider } from "./types.ts";
-import { setSecurityHeaders } from "./utils.ts";
 import alternatives from "./providers";
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { err400, err404 } from "./errors.ts";
+import { secureHeaders } from "hono/secure-headers";
 
-const app = express();
-const port = process.env.PORT || 3000;
+const app = new Hono();
+const port = Number(process.env.PORT) || 3000;
 
-app.get("/", (_: Request, res: Response) => {
-    setSecurityHeaders(res);
-    res.redirect("https://github.com/JayXTQ/dembed");
+app.use(secureHeaders());
+
+app.notFound(async (c) => {
+    return c.text("Not Found", 404);
+});
+
+app.get("/", async (c) => {
+    c.redirect("https://github.com/JayXTQ/dembed");
 });
 
 async function getProvider(provider: string) {
@@ -34,81 +41,78 @@ const browser = puppeteer.launch({
     ],
 });
 
-app.get("/http*", async (req: Request, res: Response) => {
-    setSecurityHeaders(res);
-    const url = req.url.slice(1);
+app.get("/http*", async (c) => {
+    const url = c.req.url.slice(1);
     if (
-        !req.headers["user-agent"]?.includes("Discordbot")
+        !c.req.header("User-Agent")?.includes("Discordbot")
         // "Mozilla/5.0 (compatible; Discordbot/2.0; +discordapp.com)"
     )
-        return res.redirect(url);
+        return c.redirect(url);
     if (url.length <= 4) return;
     if (
         !/^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i.test(
             url,
         )
     ) {
-        return res.status(400).send("Bad Request");
+        return await err400(c)
     }
     let provider: string | null = url.split("/")[2];
-    if (!provider) return res.status(400).send("Bad Request");
+    if (!provider) return await err400(c)
     provider = provider.split(".").at(-2) ?? null;
-    if (!provider) return res.status(400).send("Bad Request");
+    if (!provider) return await err400(c)
     console.log("url provider", provider);
     console.log("alternatives provider", alternatives[provider]);
     let providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile)
         providerFile = await getProvider(alternatives[provider]);
     if (providerFile == null || !providerFile) {
-        return res.status(404).send("Provider not found");
+        return await err404(c, "Provider");
     }
     const response = await providerFile.default(await browser, url);
-    if (!response) return res.status(400).send("Bad Request");
-    return res.send(response);
+    if (!response) return await err400(c)
+    return c.html(response);
 });
 
-app.get("/video/:provider/*", async (req: Request, res: Response) => {
-    setSecurityHeaders(res);
-    const provider = req.params.provider;
-    const data = req.url.split(`/${provider}/`)[1];
-    if (!data) return res.status(400).send("Bad Request");
+app.get("/video/:provider/*", async (c) => {
+    const provider = c.req.param("provider");
+    const data = c.req.url.split(`/${provider}/`)[1];
+    if (!data) return await err400(c);
     const providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile) {
-        return res.status(404).send("Provider not found");
+        return await err404(c, "Provider");
     }
     const response = await providerFile.video(await browser, data);
-    if (!response) return res.status(400).send("Bad Request");
-    if (typeof response === "string") return res.redirect(response);
-    res.setHeader("Content-Type", "video/mp4");
-    return res.end(response, "binary");
+    if (!response) return await err400(c);
+    if (typeof response === "string") return c.redirect(response);
+    c.res.headers.set("Content-Type", "video/mp4");
+    return c.body(response);
 });
 
-app.get("/image/:provider/*", async (req: Request, res: Response) => {
-    setSecurityHeaders(res);
-    const provider = req.params.provider;
-    const data = req.url.split(`/${provider}/`)[1];
-    if (!data) return res.status(400).send("Bad Request");
+app.get("/image/:provider/*", async (c) => {
+    const provider = c.req.param("provider");
+    const data = c.req.url.split(`/${provider}/`)[1];
+    if (!data) return await err400(c);
     const providerFile = await getProvider(provider);
     if (providerFile == null || !providerFile) {
-        return res.status(404).send("Provider not found");
+        return await err404(c, "Provider");
     }
     const response = await providerFile.image(await browser, data);
-    if (!response) return res.status(400).send("Bad Request");
-    if (typeof response === "string") return res.redirect(response);
-    res.setHeader("Content-Type", "image/png");
-    return res.end(response, "binary");
+    if (!response) return await err400(c);
+    if (typeof response === "string") return c.redirect(response);
+    c.header("Content-Type", "image/png");
+    return c.body(response);
 });
 
-app.get("/oembed", async (req: Request, res: Response) => {
-    setSecurityHeaders(res);
-    const url = new URL(req.url, `${req.protocol}://${req.headers.host}`);
+app.get("/oembed", async (c) => {
+    const url = new URL(c.req.url);
     const searchParams = Object.fromEntries(url.searchParams.entries());
     for (const key in searchParams) {
         searchParams[key] = decodeURIComponent(searchParams[key]);
     }
-    return res.json(searchParams);
+    return c.json(searchParams);
 });
 
-app.listen(port, () => {
-    console.log(`Server started`);
-});
+serve({
+    fetch: app.fetch,
+    port
+})

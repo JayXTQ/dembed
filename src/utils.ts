@@ -1,7 +1,7 @@
-import { Response } from "express";
 import sharp from "sharp";
 import axios from "axios";
 import { ElementHandle } from "puppeteer";
+import { Context } from "hono";
 
 export function extractText(html: string): string {
     html = html
@@ -21,25 +21,25 @@ export function extractText(html: string): string {
     return html;
 }
 
-export function setSecurityHeaders(res: Response) {
-    res.setHeader("Content-Security-Policy", "script-src 'self'");
-    res.setHeader(
-        "Strict-Transport-Security",
-        "max-age=31536000; includeSubDomains",
-    );
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("X-Frame-Options", "SAMEORIGIN");
-    res.setHeader("X-XSS-Protection", "1; mode=block");
-    res.setHeader("Referrer-Policy", "no-referrer");
-    res.setHeader(
-        "Feature-Policy",
-        "geolocation 'none'; microphone 'none'; camera 'none'",
-    );
-    res.setHeader(
-        "Permissions-Policy",
-        "geolocation=(), microphone=(), camera=()",
-    );
-}
+// export function setSecurityHeaders(c: Context) {
+//     c.header("Content-Security-Policy", "script-src 'self'");
+//     c.header(
+//         "Strict-Transport-Security",
+//         "max-age=31536000; includeSubDomains",
+//     );
+//     c.header("X-Content-Type-Options", "nosniff");
+//     c.header("X-Frame-Options", "SAMEORIGIN");
+//     c.header("X-XSS-Protection", "1; mode=block");
+//     c.header("Referrer-Policy", "no-referrer");
+//     c.header(
+//         "Feature-Policy",
+//         "geolocation 'none'; microphone 'none'; camera 'none'",
+//     );
+//     c.header(
+//         "Permissions-Policy",
+//         "geolocation=(), microphone=(), camera=()",
+//     );
+// }
 
 export async function gridImages(images: Buffer[]): Promise<Buffer> {
     const targetHeight = images.length > 2 ? 1000 : 500;
