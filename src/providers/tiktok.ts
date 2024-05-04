@@ -1,5 +1,5 @@
 import { ElementHandle } from "puppeteer";
-import createEmbed from "../createEmbed.tsx";
+import createEmbed from "../createEmbed.ts";
 import { extractText, getProperty } from "../utils.ts";
 import { VideoProviders, Providers } from "../types.ts";
 
