@@ -46,16 +46,17 @@ const browser = puppeteer.launch({
 app.get("/http*", async (c) => {
     const url = new URL(c.req.url).pathname.slice(1);
     if (
-        !c.req.header("User-Agent")?.includes("Discordbot")
+        !c.req.header("User-Agent")?.includes("Discordbot") && process.env.HEROKU
         // "Mozilla/5.0 (compatible; Discordbot/2.0; +discordapp.com)"
     )
         return c.redirect(url);
     if (url.length <= 4) return;
     if (
-        !/^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i.test(
+        !/^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%@_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i.test(
             url,
         )
     ) {
+        console.log("Invalid URL", url)
         return await err400(c);
     }
     let provider: string | null = url.split("/")[2];
