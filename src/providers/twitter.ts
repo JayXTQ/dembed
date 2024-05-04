@@ -77,7 +77,7 @@ export default (async (browser, url) => {
 
     let tweettext =
         (await page
-            .waitForSelector(`${loc} div[data-testid="tweetText"]`)
+            .waitForSelector(`${loc} div[data-testid="tweetText"]`, { timeout: 5000 })
             .catch(() => "")) ?? "";
 
     const retweetLink = await getRetweetLink(page);
