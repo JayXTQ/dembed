@@ -104,7 +104,7 @@ export default (async (browser, url) => {
                     return await getProperty(image, "src");
                 }),
             );
-            await redis.set(`image:twitter:${pathname.slice(1)}`, images.join("\n"));
+            await redis.set(`image:twitter:${pathname.slice(1)}`, images.join("\n"), { EX: 86400 });
             src = `/image/twitter/${pathname.slice(1)}`;
         }
     }
@@ -162,6 +162,5 @@ export const image: ImageProviders = async (_, data) => {
     if (!redisData) return null;
     const images = redisData.split("\n");
     const buffer = await gridImages(await Promise.all(images.map(async (image) => await getBuffer(image))));
-    await redis.del(`image:twitter:${data}`);
     return buffer;
 };
