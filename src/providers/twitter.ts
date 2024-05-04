@@ -101,11 +101,10 @@ export default (async (browser, url) => {
         else {
             const images = await Promise.all(
                 tweetimage.slice(0,4).map(async (image) => {
-                    return await getBuffer(await getProperty(image, "src"));
+                    return await getProperty(image, "src");
                 }),
             );
-            const buffer = await gridImages(images);
-            await redis.set(`image:twitter:${pathname.slice(1)}`, buffer);
+            await redis.set(`image:twitter:${pathname.slice(1)}`, images.join("\n"));
             src = `/image/twitter/${pathname.slice(1)}`;
         }
     }
@@ -161,7 +160,8 @@ export const video = async (
 export const image: ImageProviders = async (_, data) => {
     const redisData = await redis.get(`image:twitter:${data}`);
     if (!redisData) return null;
-    const buffer = Buffer.from(redisData);
+    const images = redisData.split("\n");
+    const buffer = await gridImages(await Promise.all(images.map(async (image) => await getBuffer(image))));
     await redis.del(`image:twitter:${data}`);
     return buffer;
 };

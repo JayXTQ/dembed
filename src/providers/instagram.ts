@@ -34,10 +34,9 @@ export default (async (browser, url) => {
     if (!post) {
         const video = await page.$("video")
         if (!video) return null;
-        let src = await page.evaluate((video) => video.src, video);
-        const buffer = await getBuffer(src);
+        const src_ = await page.evaluate((video) => video.src, video);
         const retUrl = url.split("instagram.com/")[1].split("?")[0];
-        await redis.set(`video:instagram:${retUrl}`, buffer);
+        await redis.set(`video:instagram:${retUrl}`, src_);
         src = `/video/instagram/${retUrl}`;
     } else {
         const img_ = await page
@@ -70,7 +69,7 @@ export default (async (browser, url) => {
 export const video: VideoProviders = async (_, data) => {
     const redisData = await redis.get(`video:instagram:${data}`);
     if (!redisData) return null;
-    const buffer = Buffer.from(redisData);
+    const buffer = getBuffer(redisData);
     await redis.del(`video:instagram:${data}`);
     return buffer;
 };
