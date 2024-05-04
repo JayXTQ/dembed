@@ -44,7 +44,7 @@ export default (async (browser, url) => {
                 .split("?")[0]
                 .split("/")
                 .at(-1),
-        embed_color: "#000000",
+        embed_color: "#000001",
         title: `${user} on TikTok`,
         username: user,
     });
