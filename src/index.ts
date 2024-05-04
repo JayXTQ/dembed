@@ -6,6 +6,18 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { err400, err404 } from "./errors.ts";
 import { secureHeaders } from "hono/secure-headers";
+import { createClient } from "redis";
+
+export const redis = createClient({
+    // password: process.env.REDIS_PASSWORD,
+    // socket: {
+    //     host: process.env.REDIS_HOST,
+    //     port: Number(process.env.REDIS_PORT),
+    // }
+    url: process.env.REDISCLOUD_URL,
+});
+
+redis.connect();
 
 const app = new Hono();
 const port = Number(process.env.PORT) || 3000;

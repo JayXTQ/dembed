@@ -2,6 +2,7 @@ import { Browser, ElementHandle, Page } from "puppeteer";
 import createEmbed, { type Options } from "../createEmbed";
 import { extractText, gridImages, getBuffer, getProperty } from "../utils";
 import type { ImageProviders, Providers } from "../types";
+import { redis } from "../index";
 
 const loc = 'html article[data-testid="tweet"]';
 
@@ -98,6 +99,13 @@ export default (async (browser, url) => {
         if (tweetimage.length === 1)
             src = await getProperty(tweetimage[0], "src");
         else {
+            const images = await Promise.all(
+                tweetimage.slice(0,4).map(async (image) => {
+                    return await getBuffer(await getProperty(image, "src"));
+                }),
+            );
+            const buffer = await gridImages(images);
+            await redis.set(`image:twitter:${pathname.slice(1)}`, buffer);
             src = `/image/twitter/${pathname.slice(1)}`;
         }
     }
@@ -150,26 +158,10 @@ export const video = async (
     return `https://d.fxtwitter.com/${data}.mp4`;
 };
 
-export const image: ImageProviders = async (browser, data) => {
-    const url = `https://twitter.com/${data}`;
-    const page = await browser.newPage();
-    await page.goto(url);
-    await page.setViewport({ width: 1920, height: 1080 });
-    const image = await page
-        .waitForSelector(
-            `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
-        )
-        .catch(() => null);
-    if (!image) return null;
-    const tweetimages = await page.$$(
-        `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
-    );
-    if (!tweetimages) return null;
-    const imageBuffers = await Promise.all(
-        tweetimages.map(async (tweetimage) => {
-            return await getBuffer(await getProperty(tweetimage, "src"));
-        }),
-    );
-    await page.close();
-    return await gridImages(imageBuffers);
+export const image: ImageProviders = async (_, data) => {
+    const redisData = await redis.get(`image:twitter:${data}`);
+    if (!redisData) return null;
+    const buffer = Buffer.from(redisData);
+    await redis.del(`image:twitter:${data}`);
+    return buffer;
 };

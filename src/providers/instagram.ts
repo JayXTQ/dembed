@@ -2,6 +2,7 @@ import { ElementHandle } from "puppeteer";
 import createEmbed from "../createEmbed.ts";
 import { extractText, getBuffer, getProperty } from "../utils.ts";
 import { VideoProviders, Providers } from "../types.ts";
+import { redis } from "../index.ts";
 
 export default (async (browser, url) => {
     const post = url.split("instagram.com/")[1].split("/")[0] === "p";
@@ -31,7 +32,13 @@ export default (async (browser, url) => {
         .split(" •")[0];
 
     if (!post) {
-        src = `/video/instagram/${url.split("instagram.com/")[1].split("?")[0]}`;
+        const video = await page.$("video")
+        if (!video) return null;
+        let src = await page.evaluate((video) => video.src, video);
+        const buffer = await getBuffer(src);
+        const retUrl = url.split("instagram.com/")[1].split("?")[0];
+        await redis.set(`video:instagram:${retUrl}`, buffer);
+        src = `/video/instagram/${retUrl}`;
     } else {
         const img_ = await page
             .waitForSelector("html article img")
@@ -60,14 +67,10 @@ export default (async (browser, url) => {
     return embed;
 }) as Providers;
 
-export const video: VideoProviders = async (browser, data) => {
-    const page = await browser.newPage();
-    await page.goto(`https://www.instagram.com/${data}`);
-    await page.setViewport({ width: 1080, height: 1024 });
-    const video = await page.waitForSelector("video").catch(() => null);
-    if (!video) return null;
-    let src = await page.evaluate((video) => video.src, video);
-    await page.close();
-    const buffer = await getBuffer(src);
+export const video: VideoProviders = async (_, data) => {
+    const redisData = await redis.get(`video:instagram:${data}`);
+    if (!redisData) return null;
+    const buffer = Buffer.from(redisData);
+    await redis.del(`video:instagram:${data}`);
     return buffer;
 };
