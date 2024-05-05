@@ -9,6 +9,7 @@ This is done by adding a simple prefix to the URL. For instance, rather than usi
 - Instagram (Reels and Single Image Posts)
 - TikTok (Videos)
 - Twitter (Generic Tweets, Photos, Videos)
+- Reddit Posts
 
 ## Contributing
 
