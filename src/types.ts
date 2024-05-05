@@ -8,15 +8,15 @@ export type IndexProvider = {
 
 export type Providers = (
     browser: Browser,
-    url: string,
+    url: string
 ) => Promise<string | null>;
 
 export type VideoProviders = (
     browser: Browser,
-    data: string,
+    data: string
 ) => Promise<Buffer | string | null>;
 
 export type ImageProviders = (
     browser: Browser,
-    data: string,
+    data: string
 ) => Promise<Buffer | string | null>;

@@ -32,7 +32,7 @@ export default (async (browser, url) => {
         .split(" •")[0];
 
     if (!post) {
-        const video = await page.$("video")
+        const video = await page.$("video");
         if (!video) return null;
         const src_ = await page.evaluate((video) => video.src, video);
         const retUrl = url.split("instagram.com/")[1].split("?")[0];

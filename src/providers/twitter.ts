@@ -8,7 +8,7 @@ const loc = 'html article[data-testid="tweet"]';
 
 async function getRetweetLink(page: Page) {
     const retweetText = await page.$(
-        `${loc} div[role="link"] a[data-testid="tweet-text-show-more-link"]`,
+        `${loc} div[role="link"] a[data-testid="tweet-text-show-more-link"]`
     );
     let retweetLink = "";
     if (retweetText) {
@@ -16,7 +16,7 @@ async function getRetweetLink(page: Page) {
             "https://twitter.com" +
                 (await page.evaluate(
                     (retweetText) => retweetText.getAttribute("href"),
-                    retweetText,
+                    retweetText
                 )) ?? "";
         await page.evaluate((sel) => {
             let element = document.querySelector(sel);
@@ -30,28 +30,28 @@ async function getTweetText(
     browser: Browser,
     page: Page,
     tweettext: ElementHandle | string,
-    retweetLink: string | null,
+    retweetLink: string | null
 ) {
     if (typeof tweettext !== "string") {
         tweettext =
             (await page.evaluate(
                 (tweettext) => tweettext.innerHTML,
-                tweettext,
+                tweettext
             )) ?? "";
         const emojis = await page.$$(`${loc} div[data-testid="tweetText"] img`);
         for (const emoji of emojis) {
             tweettext = tweettext.replace(
                 await getProperty(emoji, "outerHTML"),
-                await getProperty(emoji, "alt"),
+                await getProperty(emoji, "alt")
             );
         }
         let bannerlink: ElementHandle | string | null = await page.$(
-            `${loc} div[data-testid="card.wrapper"] div[data-testid="card.layoutLarge.media"] a`,
+            `${loc} div[data-testid="card.wrapper"] div[data-testid="card.layoutLarge.media"] a`
         );
         if (bannerlink && typeof bannerlink !== "string") {
             bannerlink = (await page.evaluate(
                 (bannerlink) => bannerlink.getAttribute("href"),
-                bannerlink,
+                bannerlink
             )) as string;
             const newPage = await browser.newPage();
             await newPage.goto(bannerlink);
@@ -62,7 +62,7 @@ async function getTweetText(
         tweettext = extractText(
             tweettext +
                 (retweetLink ? `\n\n${retweetLink}` : "") +
-                (bannerlink ? `\n\n${bannerlink}` : ""),
+                (bannerlink ? `\n\n${bannerlink}` : "")
         );
     }
     return tweettext;
@@ -78,7 +78,9 @@ export default (async (browser, url) => {
 
     let tweettext =
         (await page
-            .waitForSelector(`${loc} div[data-testid="tweetText"]`, { timeout: 5000 })
+            .waitForSelector(`${loc} div[data-testid="tweetText"]`, {
+                timeout: 5000,
+            })
             .catch(() => "")) ?? "";
 
     const retweetLink = await getRetweetLink(page);
@@ -92,7 +94,7 @@ export default (async (browser, url) => {
     }
 
     const tweetimage = await page.$$(
-        `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`,
+        `${loc} div[data-testid="tweetPhoto"] img[alt="Image"]`
     );
     if (tweetimage) {
         type = "image";
@@ -100,17 +102,21 @@ export default (async (browser, url) => {
             src = await getProperty(tweetimage[0], "src");
         else {
             const images = await Promise.all(
-                tweetimage.slice(0,4).map(async (image) => {
+                tweetimage.slice(0, 4).map(async (image) => {
                     return await getProperty(image, "src");
-                }),
+                })
             );
-            await redis.set(`image:twitter:${pathname.slice(1)}`, images.join("\n"), { EX: 86400 });
+            await redis.set(
+                `image:twitter:${pathname.slice(1)}`,
+                images.join("\n"),
+                { EX: 86400 }
+            );
             src = `/image/twitter/${pathname.slice(1)}`;
         }
     }
 
     const tweetvideo = await page.$(
-        `${loc} div[data-testid="tweetPhoto"] div[data-testid="videoPlayer"] div[data-testid="videoComponent"] video source`,
+        `${loc} div[data-testid="tweetPhoto"] div[data-testid="videoPlayer"] div[data-testid="videoComponent"] video source`
     );
     if (tweetvideo) {
         type = "video";
@@ -151,7 +157,7 @@ export default (async (browser, url) => {
 
 export const video = async (
     _: Browser,
-    data: string,
+    data: string
 ): Promise<string | null> => {
     if (data.endsWith("/")) {
         data = data.slice(0, -1);
@@ -163,6 +169,8 @@ export const image: ImageProviders = async (_, data) => {
     const redisData = await redis.get(`image:twitter:${data}`);
     if (!redisData) return null;
     const images = redisData.split("\n");
-    const buffer = await gridImages(await Promise.all(images.map(async (image) => await getBuffer(image))));
+    const buffer = await gridImages(
+        await Promise.all(images.map(async (image) => await getBuffer(image)))
+    );
     return buffer;
 };

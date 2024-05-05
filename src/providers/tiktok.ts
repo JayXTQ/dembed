@@ -15,18 +15,18 @@ export default (async (browser, url) => {
     for (const element of username) {
         const hasClass = await page.evaluate(
             (element) => !!element.getAttribute("class"),
-            element,
+            element
         );
         if (hasClass) {
             user = (await page.evaluate(
                 (element) => element.textContent,
-                element,
+                element
             )) as string;
             break;
         }
     }
     let description: ElementHandle | string | null = await page.$(
-        'h1[data-e2e="browse-video-desc"]',
+        'h1[data-e2e="browse-video-desc"]'
     );
     if (!description) description = "No description";
     if (typeof description !== "string")

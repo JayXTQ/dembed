@@ -68,7 +68,7 @@ export async function gridImages(images: Buffer[]): Promise<Buffer> {
                 left: x,
                 top: y,
             };
-        }),
+        })
     );
 
     // Composite the images onto the initial blank canvas
