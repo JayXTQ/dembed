@@ -6,11 +6,12 @@ import { redis } from "..";
 
 export default (async (browser, url) => {
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537');
     await page.setViewport({ width: 1920, height: 1080 });
+    await page.goto(url);
     // reddit appears to be incredibly easy because apparently they use slots :sob:
 
-    const collect = await page.waitForSelector(`html main [content-href="${page.url().split("?")[0]}"]`, { timeout: 20000 }).catch(() => null);
+    const collect = await page.waitForSelector(`html h1[slot="title"]`, { timeout: 20000 }).catch(() => null);
     let type: "image" | "video" | "none" = "none";
     if (!collect) return null;
     let title: ElementHandle | string | null = await page.$('html shreddit-title')
