@@ -10,10 +10,10 @@ export default (async (browser, url) => {
     await page.setViewport({ width: 1920, height: 1080 });
     // reddit appears to be incredibly easy because apparently they use slots :sob:
 
-    const collect = await page.waitForSelector('shreddit-post', { timeout: 5000 }).catch(() => null);
+    const collect = await page.waitForSelector('html shreddit-post', { timeout: 5000 }).catch(() => null);
     let type: "image" | "video" | "none" = "none";
     if (!collect) return null;
-    let title: ElementHandle | string | null = await page.$('shreddit-title')
+    let title: ElementHandle | string | null = await page.$('html shreddit-title')
     if (!title) return null;
     title = await getProperty(title, 'title')
     if (!title) return null;

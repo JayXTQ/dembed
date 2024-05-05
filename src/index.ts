@@ -52,7 +52,7 @@ const browser = puppeteer.launch({
         "--disable-setuid-sandbox",
         "--disable-features=IsolateOrigins",
         "--disable-site-isolation-trials",
-    ],
+    ]
 });
 
 app.get("/http*", async (c) => {
