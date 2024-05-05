@@ -10,41 +10,41 @@ export default (async (browser, url) => {
     await page.setViewport({ width: 1920, height: 1080 });
     // reddit appears to be incredibly easy because apparently they use slots :sob:
 
-    const collect = await page.waitForSelector('html shreddit-post', { timeout: 5000 }).catch(() => null);
+    const collect = await page.waitForSelector(`html main [content-href="${page.url().split("?")[0]}"]`, { timeout: 20000 }).catch(() => null);
     let type: "image" | "video" | "none" = "none";
     if (!collect) return null;
     let title: ElementHandle | string | null = await page.$('html shreddit-title')
     if (!title) return null;
     title = await getProperty(title, 'title')
     if (!title) return null;
-    let content: ElementHandle | string | null = await page.$('html shreddit-post div[slot="text-body"] > div > div') || '';
+    let content: ElementHandle | string | null = await page.$('html main shreddit-post div[slot="text-body"] > div > div') || '';
     if(typeof content !== 'string')
         content = extractText(await getProperty(content, 'innerHTML'))
 
-    const bannerlink = await page.$('html shreddit-post div[slot="post-media-container"] shreddit-aspect-ratio > a')
+    const bannerlink = await page.$('html main shreddit-post div[slot="post-media-container"] shreddit-aspect-ratio > a')
     if(bannerlink) content += `\n\n${await getProperty(bannerlink, 'href')}`
 
-    const crosspost = await page.$('html shreddit-post div[class="crosspost-title m-0"] > a')
+    const crosspost = await page.$('html main shreddit-post div[class="crosspost-title m-0"] > a')
     if(crosspost) content += `\n\nCrossposted from: https://www.reddit.com${await getProperty(crosspost, 'href')}`
 
     let src: string = '';
-    const image = await page.$('html shreddit-post img[id="post-image"]')
+    const image = await page.$('html main shreddit-post img[id="post-image"]')
     if(image) {
         type = 'image';
         src = await getProperty(image, 'src')
     }
 
-    const video = await page.$('html shreddit-post shreddit-player')
+    const video = await page.$('html main shreddit-post shreddit-player')
     if(video) {
         type = 'video';
         src = await getProperty(video, 'src')
         if(src.split("?")[0].endsWith('.gif')) type = 'image';
     }
 
-    const gallery = await page.$('html shreddit-post gallery-carousel')
+    const gallery = await page.$('html main shreddit-post gallery-carousel')
     if(gallery) {
         type = 'image';
-        let images: ElementHandle[] | string[] | null = await page.$$('html shreddit-post gallery-carousel figure img')
+        let images: ElementHandle[] | string[] | null = await page.$$('html main shreddit-post gallery-carousel figure img')
         if(!images) return null;
         images = await Promise.all(images.map(async (element) => {
             return await getProperty(element, 'src')
