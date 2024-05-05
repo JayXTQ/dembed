@@ -131,6 +131,7 @@ export default (async (browser, url) => {
         embed_color: string;
         title: string;
         username: string;
+        provider: string;
     } = {
         url,
         description: tweettext,
@@ -138,6 +139,7 @@ export default (async (browser, url) => {
         embed_color: "#1D9BF0",
         title: `${username} on Twitter`,
         username: username as string,
+        provider: "Twitter",
     };
     if (type === "image" || type === "video") {
         insertEmbed.src = src as string;

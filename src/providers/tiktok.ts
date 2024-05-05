@@ -47,6 +47,7 @@ export default (async (browser, url) => {
         embed_color: "#000001",
         title: `${user} on TikTok`,
         username: user,
+        provider: "TikTok",
     });
     return embed;
 }) as Providers;

@@ -4,6 +4,7 @@ export type Options = {
     embed_color?: string;
     title?: string;
     username?: string;
+    provider?: string;
 } & ({
     type: "video";
     src: string;
@@ -37,7 +38,7 @@ export default (
         },
         {
             property: "og:site_name",
-            content: "dembed",
+            content: options.provider ? `${options.provider} - dembed` : "dembed",
         },
     ];
 

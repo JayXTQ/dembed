@@ -62,6 +62,7 @@ export default (async (browser, url) => {
         embed_color: "#E4405F",
         title: `${user} on Instagram`,
         username: user,
+        provider: "Instagram",
     });
     return embed;
 }) as Providers;
