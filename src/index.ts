@@ -1,26 +1,39 @@
 import "dotenv/config";
-import puppeteer from "puppeteer";
+import puppeteer, { BrowserWorker } from "@cloudflare/puppeteer";
 import type { IndexProvider as Provider } from "./types.ts";
 import alternatives from "./providers";
 import { Hono } from "hono";
-import { serve } from "@hono/node-server";
-import { err400, err404 } from "./errors.ts";
+import { err400, err404 } from "./errors";
 import { secureHeaders } from "hono/secure-headers";
-import { createClient } from "redis";
+import { Redis } from "@upstash/redis/cloudflare";
+import { env } from "node:process"
 
-export const redis = createClient({
-    // password: process.env.REDIS_PASSWORD,
-    // socket: {
-    //     host: process.env.REDIS_HOST,
-    //     port: Number(process.env.REDIS_PORT),
-    // }
-    url: process.env.REDISCLOUD_URL,
+// import { createClient } from "redis";
+
+// export const redis = createClient({
+//     // password: process.env.REDIS_PASSWORD,
+//     // socket: {
+//     //     host: process.env.REDIS_HOST,
+//     //     port: Number(process.env.REDIS_PORT),
+//     // }
+//     url: process.env.REDISCLOUD_URL,
+// });
+
+// redis.connect();
+
+export const redis = Redis.fromEnv({
+    UPSTASH_REDIS_REST_URL: env.UPSTASH_REDIS_REST_URL as string,
+    UPSTASH_REDIS_REST_TOKEN: env.UPSTASH_REDIS_REST_TOKEN as string,
 });
 
-redis.connect();
+type Bindings = {
+    DEMBEDBROWSER: BrowserWorker;
+    UPSTASH_REDIS_REST_URL: string;
+    UPSTASH_REDIS_REST_TOKEN: string;
+    IS_LOCAL_MODE: number;
+}
 
-const app = new Hono();
-const port = Number(process.env.PORT) || 3000;
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.use(secureHeaders());
 
@@ -43,24 +56,11 @@ async function getProvider(provider: string) {
     }
 }
 
-const browser = puppeteer.launch({
-    args: [
-        "--no-sandbox",
-        "--font-render-hinting=none",
-        "--force-color-profile=srgb",
-        "--disable-web-security",
-        "--disable-setuid-sandbox",
-        "--disable-features=IsolateOrigins",
-        "--disable-site-isolation-trials",
-    ],
-    headless: true,
-});
-
 app.get("/http*", async (c) => {
     const url = new URL(c.req.url).pathname.slice(1);
     if (
         !c.req.header("User-Agent")?.includes("Discordbot") &&
-        process.env.HEROKU
+        c.env.IS_LOCAL_MODE
         // "Mozilla/5.0 (compatible; Discordbot/2.0; +discordapp.com)"
     )
         return c.redirect(url);
@@ -85,7 +85,13 @@ app.get("/http*", async (c) => {
     if (providerFile == null || !providerFile) {
         return await err404(c, "Provider file");
     }
-    const response = await providerFile.default(await browser, url);
+    
+    const browser = await puppeteer.launch(c.env.DEMBEDBROWSER);
+
+    const response = await providerFile.default(browser, url);
+
+    await browser.close();
+
     if (!response) return await err400(c);
     return c.html(response);
 });
@@ -98,7 +104,13 @@ app.get("/video/:provider/*", async (c) => {
     if (providerFile == null || !providerFile) {
         return await err404(c, "Provider");
     }
-    const response = await providerFile.video(await browser, data);
+    
+    const browser = await puppeteer.launch(c.env.DEMBEDBROWSER);
+
+    const response = await providerFile.video(browser, data);
+
+    await browser.close();
+
     if (!response) return await err400(c);
     if (typeof response === "string") return c.redirect(response);
     c.res.headers.set("Content-Type", "video/mp4");
@@ -113,7 +125,13 @@ app.get("/image/:provider/*", async (c) => {
     if (providerFile == null || !providerFile) {
         return await err404(c, "Provider");
     }
-    const response = await providerFile.image(await browser, data);
+    
+    const browser = await puppeteer.launch(c.env.DEMBEDBROWSER);
+
+    const response = await providerFile.image(browser, data);
+
+    await browser.close();
+
     if (!response) return await err400(c);
     if (typeof response === "string") return c.redirect(response);
     c.header("Content-Type", "image/png");
@@ -129,7 +147,4 @@ app.get("/oembed", async (c) => {
     return c.json(searchParams);
 });
 
-serve({
-    fetch: app.fetch,
-    port,
-});
+export default app;

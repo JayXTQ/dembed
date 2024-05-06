@@ -1,0 +1,7 @@
+name = "dembed"
+main = "src/index.ts"
+compatibility_date = "2024-05-06"
+node_compat = true
+minify = true
+
+browser = { binding = "DEMBEDBROWSER" }

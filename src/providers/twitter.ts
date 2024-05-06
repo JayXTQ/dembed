@@ -1,4 +1,4 @@
-import { Browser, ElementHandle, Page } from "puppeteer";
+import { Browser, ElementHandle, Page } from "@cloudflare/puppeteer";
 import createEmbed, { type Options } from "../createEmbed";
 import { extractText, gridImages, getBuffer, getProperty } from "../utils";
 import type { ImageProviders, Providers } from "../types";
@@ -109,7 +109,7 @@ export default (async (browser, url) => {
             await redis.set(
                 `image:twitter:${pathname.slice(1)}`,
                 images.join("\n"),
-                { EX: 86400 }
+                { ex: 86400 }
             );
             src = `/image/twitter/${pathname.slice(1)}`;
         }
@@ -166,7 +166,7 @@ export const video = async (
 };
 
 export const image: ImageProviders = async (_, data) => {
-    const redisData = await redis.get(`image:twitter:${data}`);
+    const redisData = await redis.get(`image:twitter:${data}`) as string | null;
     if (!redisData) return null;
     const images = redisData.split("\n");
     const buffer = await gridImages(

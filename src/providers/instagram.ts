@@ -1,8 +1,8 @@
-import { ElementHandle } from "puppeteer";
-import createEmbed from "../createEmbed.ts";
-import { extractText, getBuffer, getProperty } from "../utils.ts";
-import { VideoProviders, Providers } from "../types.ts";
-import { redis } from "../index.ts";
+import { ElementHandle } from "@cloudflare/puppeteer";
+import createEmbed from "../createEmbed";
+import { extractText, getBuffer, getProperty } from "../utils";
+import { VideoProviders, Providers } from "../types";
+import { redis } from "../index";
 
 export default (async (browser, url) => {
     const post = url.split("instagram.com/")[1].split("/")[0] === "p";
@@ -36,7 +36,7 @@ export default (async (browser, url) => {
         if (!video) return null;
         const src_ = await page.evaluate((video) => video.src, video);
         const retUrl = url.split("instagram.com/")[1].split("?")[0];
-        await redis.set(`video:instagram:${retUrl}`, src_, { EX: 86400 });
+        await redis.set(`video:instagram:${retUrl}`, src_, { ex: 86400 });
         src = `/video/instagram/${retUrl}`;
     } else {
         const img_ = await page
@@ -68,7 +68,7 @@ export default (async (browser, url) => {
 }) as Providers;
 
 export const video: VideoProviders = async (_, data) => {
-    const redisData = await redis.get(`video:instagram:${data}`);
+    const redisData = await redis.get(`video:instagram:${data}`) as string | null;
     if (!redisData) return null;
     const buffer = getBuffer(redisData);
     return buffer;

@@ -146,16 +146,16 @@ export default (options: Options) => {
         ${metas
             .map(
                 (meta) =>
-                    `<meta ${Object.keys(meta)
-                        .map((key) => `${key}="${meta[key]}"`)
+                    `<meta ${Object.keys(meta as any)
+                        .map((key) => `${key}="${(meta as any)[key]}"`)
                         .join(" ")} />`
             )
             .join("\n       ")}
         ${insertMetas
             .map(
                 (meta) =>
-                    `<meta ${Object.keys(meta)
-                        .map((key) => `${key}="${meta[key]}"`)
+                    `<meta ${Object.keys(meta as any)
+                        .map((key) => `${key}="${(meta as any)[key]}"`)
                         .join(" ")} />`
             )
             .join("\n     ")}
