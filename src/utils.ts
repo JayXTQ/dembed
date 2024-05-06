@@ -42,10 +42,20 @@ export function extractText(html: string): string {
 // }
 
 export async function gridImages(images: Buffer[]): Promise<Buffer> {
-    const targetHeight = images.length > 2 ? 1000 : 500;
+    const sharpImages = images.map((image) => sharp(image));
+    let smallestDimensions = { width: 500, height: 500 };
+    for(const image of sharpImages) {
+        const { width, height } = await image.metadata();
+        if(!width || !height) continue;
+        if (width < smallestDimensions.width && height < smallestDimensions.height) {
+            smallestDimensions = { width, height };
+        }
+    }
+
+    const targetHeight = images.length > 2 ? smallestDimensions.height * 2 : smallestDimensions.height;
     let compositeImage = sharp({
         create: {
-            width: 1000,
+            width: smallestDimensions.width * 2,
             height: targetHeight,
             channels: 4,
             background: { r: 255, g: 255, b: 255, alpha: 1 },
@@ -53,9 +63,9 @@ export async function gridImages(images: Buffer[]): Promise<Buffer> {
     });
 
     const imageComposites = await Promise.all(
-        images.map(async (buffer, index) => {
-            const targetWidth = 500;
-            const resizedBuffer = await sharp(buffer)
+        sharpImages.map(async (image, index) => {
+            const targetWidth = smallestDimensions.width;
+            const resizedBuffer = await image
                 .resize(targetWidth)
                 .toBuffer();
             const row = Math.floor(index / 2);
