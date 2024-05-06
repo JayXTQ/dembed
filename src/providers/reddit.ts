@@ -1,4 +1,4 @@
-import { ElementHandle } from "@cloudflare/puppeteer";
+import { ElementHandle } from "puppeteer";
 import { ImageProviders, Providers } from "../types";
 import { extractText, getBuffer, getProperty, gridImages } from "../utils";
 import createEmbed, { Options } from "../createEmbed";
@@ -22,7 +22,7 @@ export default (async (browser, url) => {
         "html shreddit-title"
     );
     if (!title) return null;
-    title = await getProperty(title, "title") as string;
+    title = await getProperty(title, "title");
     if (!title) return null;
     let content: ElementHandle | string | null =
         (await page.$(
@@ -73,7 +73,7 @@ export default (async (browser, url) => {
         );
         const retUrl = url.split("https://www.reddit.com/")[1].split("?")[0];
         await redis.set(`image:reddit:${retUrl}`, images.join("\n"), {
-            ex: 86400,
+            EX: 86400,
         });
         src = "/image/reddit/" + retUrl;
     }
@@ -105,7 +105,7 @@ export default (async (browser, url) => {
 }) as Providers;
 
 export const image: ImageProviders = async (_, data) => {
-    const redisData = await redis.get(`image:reddit:${data}`) as string | null;
+    const redisData = await redis.get(`image:reddit:${data}`);
     if (!redisData) return null;
     const buffer = await gridImages(
         await Promise.all(

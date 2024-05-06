@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import axios from "axios";
-import { ElementHandle } from "@cloudflare/puppeteer";
+import { ElementHandle } from "puppeteer";
 import { Context } from "hono";
 
 export function extractText(html: string): string {

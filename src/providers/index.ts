@@ -4,4 +4,4 @@
 
 export default {
     x: "twitter",
-} as Record<string, string>;
+};

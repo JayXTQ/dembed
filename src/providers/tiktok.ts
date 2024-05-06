@@ -1,7 +1,7 @@
-import { ElementHandle } from "@cloudflare/puppeteer";
-import createEmbed from "../createEmbed";
-import { extractText, getProperty } from "../utils";
-import { VideoProviders, Providers } from "../types";
+import { ElementHandle } from "puppeteer";
+import createEmbed from "../createEmbed.ts";
+import { extractText, getProperty } from "../utils.ts";
+import { VideoProviders, Providers } from "../types.ts";
 
 export default (async (browser, url) => {
     url = url.split("?")[0]; // prefer no tracking when possible

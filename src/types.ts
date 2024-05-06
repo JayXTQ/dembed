@@ -1,4 +1,4 @@
-import { Browser } from "@cloudflare/puppeteer";
+import { Browser } from "puppeteer";
 
 export type IndexProvider = {
     default: Providers;
