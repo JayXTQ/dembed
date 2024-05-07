@@ -1,7 +1,6 @@
 import sharp from "sharp";
 import axios from "axios";
 import { ElementHandle } from "puppeteer";
-import { Context } from "hono";
 
 export function extractText(html: string): string {
     html = html
@@ -44,15 +43,21 @@ export function extractText(html: string): string {
 export async function gridImages(images: Buffer[]): Promise<Buffer> {
     const sharpImages = images.map((image) => sharp(image));
     let smallestDimensions = { width: 500, height: 500 };
-    for(const image of sharpImages) {
+    for (const image of sharpImages) {
         const { width, height } = await image.metadata();
-        if(!width || !height) continue;
-        if (width < smallestDimensions.width && height < smallestDimensions.height) {
+        if (!width || !height) continue;
+        if (
+            width < smallestDimensions.width &&
+            height < smallestDimensions.height
+        ) {
             smallestDimensions = { width, height };
         }
     }
 
-    const targetHeight = images.length > 2 ? smallestDimensions.height * 2 : smallestDimensions.height;
+    const targetHeight =
+        images.length > 2
+            ? smallestDimensions.height * 2
+            : smallestDimensions.height;
     let compositeImage = sharp({
         create: {
             width: smallestDimensions.width * 2,
@@ -66,7 +71,12 @@ export async function gridImages(images: Buffer[]): Promise<Buffer> {
         sharpImages.map(async (image, index) => {
             const targetWidth = smallestDimensions.width;
             const resizedBuffer = await image
-                .resize(targetWidth)
+                .resize({
+                    width: smallestDimensions.width,
+                    height: smallestDimensions.height,
+                    fit: "inside",
+                    withoutEnlargement: true,
+                })
                 .toBuffer();
             const row = Math.floor(index / 2);
             const col = index % 2;
@@ -78,7 +88,7 @@ export async function gridImages(images: Buffer[]): Promise<Buffer> {
                 left: x,
                 top: y,
             };
-        })
+        }),
     );
 
     // Composite the images onto the initial blank canvas
