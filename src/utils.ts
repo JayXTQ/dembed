@@ -74,7 +74,7 @@ export async function gridImages(images: Buffer[]): Promise<Buffer> {
                 .resize({
                     width: smallestDimensions.width,
                     height: smallestDimensions.height,
-                    fit: "inside",
+                    fit: "cover",
                     withoutEnlargement: true,
                 })
                 .toBuffer();
